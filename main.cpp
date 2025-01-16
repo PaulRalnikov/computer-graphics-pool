@@ -46,11 +46,13 @@
 #include "programs/shader_program.h"
 #include "programs/environment_map/environment_map_program.h"
 #include "programs/pool/pool.h"
+#include "programs/water/water.h"
 
 const std::string project_root = PROJECT_ROOT;
 const std::string programs_dir = project_root + "/programs";
 const std::string environmenmt_map_dir = programs_dir + "/environment_map";
 const std::string pool_dir = programs_dir + "/pool";
+const std::string water_dir = programs_dir + "/water";
 
 const std::string textures_dir = project_root + "/textures";
 
@@ -138,7 +140,7 @@ int main() try
     SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
-    SDL_Window * window = SDL_CreateWindow("Graphics course homework 3",
+    SDL_Window * window = SDL_CreateWindow("Graphics final project",
         SDL_WINDOWPOS_CENTERED,
         SDL_WINDOWPOS_CENTERED,
         800, 600,
@@ -172,20 +174,24 @@ int main() try
     GLuint billy_texture = load_texture(textures_dir + "/billy.jpg");
     GLuint bricks_texture = load_texture(textures_dir + "/bricks_diff.png");
 
-    check_error();
-    std::cout << "KOK" << std::endl;
-
     // programs
     EnvironmentMapProgram environment_map_program(
         environmenmt_map_dir + "/vertex_shader.vert",
         environmenmt_map_dir + "/fragment_shader.frag");
 
+    PoolCoordinates pool_coordinates(20.0, 20.0, 20.0, glm::vec3(10.0, -5.0, 10.0));
+
     PoolProgram pool_program(
         pool_dir + "/vertex_shader.vert",
         pool_dir + "/fragment_shader.frag",
-        PoolCoordinates(20.0, 20.0, 20.0, glm::vec3(10.0, -5.0, 10.0)),
+        pool_coordinates,
         bricks_texture,
-        bricks_texture
+        bricks_texture);
+
+    WaterProgram water_program(
+        water_dir + "/main.vert",
+        water_dir + "/main.frag",
+        pool_coordinates
     );
 
     Camera camera(glm::vec3(0.0), -0.2, 1.5);
@@ -216,8 +222,6 @@ int main() try
         environment_map_program.set_view_inverse(view_inverse);
         environment_map_program.set_environment_texture(settings.get_backgound_texture());
 
-        std::cout << glm::to_string(view_inverse) << std::endl;
-
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         glDisable(GL_DEPTH_TEST);
@@ -229,6 +233,12 @@ int main() try
 
         glEnable(GL_DEPTH_TEST);
         pool_program.run();
+
+        water_program.set_model(model);
+        water_program.set_projection(projection);
+        water_program.set_view(view);
+        water_program.fetch_time(time);
+        water_program.run();
 
         check_error();
 

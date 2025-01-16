@@ -3,17 +3,14 @@
 #include <vector>
 #include <iostream>
 
-struct Vertex{
+struct PoolVertex{
     glm::vec3 position;
     glm::vec3 normal;
     glm::vec2 texcoords;
 
-    Vertex(glm::vec3 position = glm::vec3(0.0), glm::vec3 normal = glm::vec3(0.0), glm::vec2 texcoords = glm::vec2(0.0)):
+    PoolVertex(glm::vec3 position = glm::vec3(0.0), glm::vec3 normal = glm::vec3(0.0), glm::vec2 texcoords = glm::vec2(0.0)):
         position(position), normal(normal), texcoords(texcoords) {}
 };
-
-PoolCoordinates::PoolCoordinates(float width, float length, float height, glm::vec3 bottom_center):
-    width(width), length(length), height(height), bottom_center(bottom_center) {}
 
 PoolProgram::PoolProgram(std::string vertex_shader_path, std::string fragment_shader_path,
                           PoolCoordinates coordinates, GLuint bottom_texture, GLuint wall_texture):
@@ -51,32 +48,32 @@ PoolProgram::PoolProgram(std::string vertex_shader_path, std::string fragment_sh
     glm::vec3 right_normal(0, 0, -1);
     glm::vec3 left_normal(0, 0, 1);
 
-    std::vector<Vertex> vertexes = {
+    std::vector<PoolVertex> vertexes = {
         // bottom
-        Vertex(bottom_1, botoom_normal, glm::vec2(0.0, 1.0)),
-        Vertex(bottom_2, botoom_normal, glm::vec2(1.0, 1.0)),
-        Vertex(bottom_3, botoom_normal, glm::vec2(1.0, 0.0)),
-        Vertex(bottom_4, botoom_normal, glm::vec2(0.0, 0.0)),
+        PoolVertex(bottom_1, botoom_normal, glm::vec2(0.0, 1.0)),
+        PoolVertex(bottom_2, botoom_normal, glm::vec2(1.0, 1.0)),
+        PoolVertex(bottom_3, botoom_normal, glm::vec2(1.0, 0.0)),
+        PoolVertex(bottom_4, botoom_normal, glm::vec2(0.0, 0.0)),
         // front
-        Vertex(bottom_2, front_normal, glm::vec2(0.0, 1.0)),
-        Vertex(bottom_1, front_normal, glm::vec2(1.0, 1.0)),
-        Vertex(top_1, front_normal, glm::vec2(1.0, 0.0)),
-        Vertex(top_2, front_normal, glm::vec2(0.0, 0.0)),
+        PoolVertex(bottom_2, front_normal, glm::vec2(0.0, 1.0)),
+        PoolVertex(bottom_1, front_normal, glm::vec2(1.0, 1.0)),
+        PoolVertex(top_1, front_normal, glm::vec2(1.0, 0.0)),
+        PoolVertex(top_2, front_normal, glm::vec2(0.0, 0.0)),
         // right
-        Vertex(bottom_3, right_normal, glm::vec2(0.0, 1.0)),
-        Vertex(bottom_2, right_normal, glm::vec2(1.0, 1.0)),
-        Vertex(top_2, right_normal, glm::vec2(1.0, 0.0)),
-        Vertex(top_3, right_normal, glm::vec2(0.0, 0.0)),
+        PoolVertex(bottom_3, right_normal, glm::vec2(0.0, 1.0)),
+        PoolVertex(bottom_2, right_normal, glm::vec2(1.0, 1.0)),
+        PoolVertex(top_2, right_normal, glm::vec2(1.0, 0.0)),
+        PoolVertex(top_3, right_normal, glm::vec2(0.0, 0.0)),
         // back
-        Vertex(bottom_4, front_normal, glm::vec2(0.0, 1.0)),
-        Vertex(bottom_3, front_normal, glm::vec2(1.0, 1.0)),
-        Vertex(top_3, front_normal, glm::vec2(1.0, 0.0)),
-        Vertex(top_4, front_normal, glm::vec2(0.0, 0.0)),
+        PoolVertex(bottom_4, front_normal, glm::vec2(0.0, 1.0)),
+        PoolVertex(bottom_3, front_normal, glm::vec2(1.0, 1.0)),
+        PoolVertex(top_3, front_normal, glm::vec2(1.0, 0.0)),
+        PoolVertex(top_4, front_normal, glm::vec2(0.0, 0.0)),
         // left
-        Vertex(bottom_1, left_normal, glm::vec2(0.0, 1.0)),
-        Vertex(bottom_4, left_normal, glm::vec2(1.0, 1.0)),
-        Vertex(top_4, left_normal, glm::vec2(1.0, 0.0)),
-        Vertex(top_1, left_normal, glm::vec2(0.0, 0.0)),
+        PoolVertex(bottom_1, left_normal, glm::vec2(0.0, 1.0)),
+        PoolVertex(bottom_4, left_normal, glm::vec2(1.0, 1.0)),
+        PoolVertex(top_4, left_normal, glm::vec2(1.0, 0.0)),
+        PoolVertex(top_1, left_normal, glm::vec2(0.0, 0.0)),
     };
 
     std::vector<uint32_t> indices;
@@ -104,11 +101,11 @@ PoolProgram::PoolProgram(std::string vertex_shader_path, std::string fragment_sh
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(indices[0]), indices.data(), GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, position));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(PoolVertex), (void *)offsetof(PoolVertex, position));
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, normal));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(PoolVertex), (void *)offsetof(PoolVertex, normal));
     glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, texcoords));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(PoolVertex), (void *)offsetof(PoolVertex, texcoords));
 }
 
 void PoolProgram::set_model(glm::mat4 model) {

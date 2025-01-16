@@ -24,10 +24,14 @@ set(TARGET_NAME "${PROJECT_NAME}")
 
 set(PROJECT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}")
 
-add_executable(${TARGET_NAME} main.cpp libs/stb_image/stb_image.c libs/tiny_obj_loader/tiny_obj_loader.cpp
-							  frame_time_observer.cpp camera.cpp window_size.cpp window_flags.cpp event_handler.cpp
-							  programs/shader_program.cpp programs/environment_map/environment_map_program.cpp
-							  programs/pool/pool.cpp)
+file(GLOB_RECURSE src  "*.c" "*.cpp")
+
+list(FILTER src EXCLUDE REGEX ".*\\cmake.*")
+list(FILTER src EXCLUDE REGEX ".*\\glm.*")
+list(FILTER src EXCLUDE REGEX ".*\\build.*")
+
+add_executable(${TARGET_NAME} ${src})
+
 target_include_directories(${TARGET_NAME} PUBLIC
 	"${SDL2_INCLUDE_DIRS}"
 	"${GLEW_INCLUDE_DIRS}"

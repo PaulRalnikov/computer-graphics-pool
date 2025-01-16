@@ -1,16 +1,8 @@
 #pragma once
 #include "../shader_program.h"
+#include "../pool_coordinates/pool_coordinates.h"
 #include <libs/glm/vec3.hpp>
 #include <libs/glm/mat4x4.hpp>
-
-struct PoolCoordinates {
-    float width;
-    float length;
-    float height;
-    glm::vec3 bottom_center;
-
-    PoolCoordinates(float width, float length, float height, glm::vec3 bottom_center);
-};
 
 class PoolProgram : public ShaderProgram {
 public:
