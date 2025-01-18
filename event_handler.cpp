@@ -29,6 +29,8 @@ void EventHandler::handleEvents(float dt)
             button_down[event.key.keysym.sym] = true;
             if (event.key.keysym.sym == SDLK_b)
                 settings.change_backgound_texture();
+            if (event.key.keysym.sym == SDLK_SPACE)
+                settings.change_time_paused();
             break;
         case SDL_KEYUP:
             button_down[event.key.keysym.sym] = false;

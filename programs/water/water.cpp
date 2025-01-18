@@ -20,6 +20,7 @@ WaterProgram::WaterProgram(std::string vertex_shader_path, std::string fragment_
     model_location = glGetUniformLocation(id, "model");
     view_location = glGetUniformLocation(id, "view");
     projection_location = glGetUniformLocation(id, "projection");
+    camera_position_location = glGetUniformLocation(id, "camera_position");
 
     glBindVertexArray(vao);
 
@@ -53,6 +54,16 @@ void WaterProgram::set_projection(glm::mat4 projection)
     glUniformMatrix4fv(projection_location, 1, GL_FALSE, reinterpret_cast<float *>(&projection));
 }
 
+void WaterProgram::set_camera_position(glm::vec3 camera_position)
+{
+    glUseProgram(id);
+    glUniform3fv(camera_position_location, 1, reinterpret_cast<float *>(&camera_position));
+}
+
+void WaterProgram::set_environment_texture(GLuint environment_texture_source) {
+    environment_texture.bind(this, environment_texture_source);
+}
+
 float f(glm::vec2 coords, float time) {
     return std::sin(coords.x + time) + cos(coords.y + time);
 }
@@ -73,7 +84,7 @@ void WaterProgram::fetch_time(float time) {
             glm::vec2 water_coords(coordinates.length * i / (quality - 1), coordinates.width * j / (quality - 1));
             vertexes.push_back(WaterVertex(
                 left_vertex + glm::vec3(water_coords.x, f(water_coords, time), water_coords.y),
-                glm::vec3(-dfdx(water_coords, time), 1.0, -dfdy(water_coords, time))
+                glm::normalize(glm::vec3(-dfdx(water_coords, time), 1.0, -dfdy(water_coords, time)))
             ));
         }
     }

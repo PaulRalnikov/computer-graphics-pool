@@ -1,12 +1,20 @@
 #include "window_flags.h"
+#include <stdexcept>
+#include <string>
 
-WindowSettings::WindowSettings(GLuint usual_texture, GLuint extra_texture) :
+WindowSettings::WindowSettings(std::vector<GLuint> texture_source_cycle) :
     running(true),
     time_paused(false),
-    usual_texture(usual_texture),
-    extra_texture(extra_texture),
-    backgound_texture(usual_texture)
-{}
+    texture_source_cycle(texture_source_cycle)
+{
+    current_texture_index = 0;
+    if (current_texture_index > texture_source_cycle.size()) {
+        throw std::runtime_error(
+            "Texture sourse cycle is too short; its length is " + std::to_string(texture_source_cycle.size())
+        );
+    }
+
+}
 
 void WindowSettings::quit()
 {
@@ -29,12 +37,11 @@ bool WindowSettings::get_time_paused() const
 }
 
 GLuint WindowSettings::get_backgound_texture() const {
-    return backgound_texture;
+    return texture_source_cycle[current_texture_index];
 }
 
 void WindowSettings::change_backgound_texture() {
-    if (backgound_texture == usual_texture)
-        backgound_texture = extra_texture;
-    else 
-        backgound_texture = usual_texture;
+    current_texture_index++;
+    if (current_texture_index == texture_source_cycle.size())
+        current_texture_index = 0;
 }

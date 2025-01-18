@@ -1,10 +1,11 @@
 #pragma once
+#include <vector>
 #include <GL/glew.h>
 
 class WindowSettings
 {
 public:
-    WindowSettings(GLuint usual_texture, GLuint extra_texture);
+    WindowSettings(std::vector<GLuint> texture_sourse_cycle);
 
     void quit();
 
@@ -21,8 +22,7 @@ public:
 private:
     bool running;
     bool time_paused;
-    GLuint backgound_texture;
 
-    GLuint usual_texture;
-    GLuint extra_texture;
+    std::vector<GLuint> texture_source_cycle;
+    unsigned int current_texture_index;
 };

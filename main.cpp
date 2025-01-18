@@ -170,9 +170,10 @@ int main() try
 
     float time = 0.f;
 
-    GLuint usual_backgound_texture = load_texture(textures_dir + "/environment_map.jpg");
-    GLuint billy_texture = load_texture(textures_dir + "/billy.jpg");
-    GLuint bricks_texture = load_texture(textures_dir + "/bricks_diff.png");
+    GLuint school_texture_source = load_texture(textures_dir + "/school.jpg");
+    GLuint billy_texture_source = load_texture(textures_dir + "/billy.jpg");
+    GLuint forest_texture_source = load_texture(textures_dir + "/forest.jpg");
+    GLuint bricks_texture_source = load_texture(textures_dir + "/bricks_diff.png");
 
     // programs
     EnvironmentMapProgram environment_map_program(
@@ -185,8 +186,8 @@ int main() try
         pool_dir + "/vertex_shader.vert",
         pool_dir + "/fragment_shader.frag",
         pool_coordinates,
-        bricks_texture,
-        bricks_texture);
+        bricks_texture_source,
+        bricks_texture_source);
 
     WaterProgram water_program(
         water_dir + "/main.vert",
@@ -195,10 +196,14 @@ int main() try
     );
 
     Camera camera(glm::vec3(0.0), -0.2, 1.5);
-
-    WindowSettings settings(usual_backgound_texture, billy_texture);
+    WindowSettings settings(
+        std::vector<GLuint>({
+            school_texture_source,
+            forest_texture_source,
+            billy_texture_source
+        })
+    );
     EventHandler handler(window_size, settings, camera);
-    
 
     while (settings.get_running())
     {
@@ -218,9 +223,11 @@ int main() try
         glm::mat4 view_inverse = glm::inverse(projection * view);
         glm::vec3 sun_direction = glm::normalize(glm::vec3(std::sin(time * 0.5f), 1.f, std::cos(time * 0.5f)));
 
+        GLuint backgound_texture_source = settings.get_backgound_texture();
+
         environment_map_program.set_camera_position(camera_position);
         environment_map_program.set_view_inverse(view_inverse);
-        environment_map_program.set_environment_texture(settings.get_backgound_texture());
+        environment_map_program.set_environment_texture(backgound_texture_source);
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
@@ -237,6 +244,8 @@ int main() try
         water_program.set_model(model);
         water_program.set_projection(projection);
         water_program.set_view(view);
+        water_program.set_environment_texture(backgound_texture_source);
+        water_program.set_camera_position(camera_position);
         water_program.fetch_time(time);
         water_program.run();
 
