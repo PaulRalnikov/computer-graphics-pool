@@ -16,12 +16,22 @@ WaterProgram::WaterProgram(std::string vertex_shader_path, std::string fragment_
     ShaderProgram(vertex_shader_path, fragment_shader_path),
     coordinates(coordinates),
     quality(quality),
+    bottom_texture(this, "bottom_texture", GL_TEXTURE_2D, 1),
     environment_texture(this, "environment_texture", GL_TEXTURE_2D, 0)
 {
     model_location = glGetUniformLocation(id, "model");
     view_location = glGetUniformLocation(id, "view");
     projection_location = glGetUniformLocation(id, "projection");
     camera_position_location = glGetUniformLocation(id, "camera_position");
+
+    bottom_angle_location = glGetUniformLocation(id, "bottom_angle");
+    bottom_normal_location = glGetUniformLocation(id, "bottom_normal");
+    bottom_size_location = glGetUniformLocation(id, "bottom_size");
+
+    glUseProgram(id);
+    glUniform3fv(bottom_angle_location, 1, reinterpret_cast<float *>(&coordinates.bottom_angle));
+    glUniform3f(bottom_normal_location, 0.0, 1.0, 0.0);
+    glUniform2f(bottom_size_location, coordinates.length, coordinates.width);
 
     glBindVertexArray(vao);
 
@@ -59,6 +69,11 @@ void WaterProgram::set_camera_position(glm::vec3 camera_position)
 {
     glUseProgram(id);
     glUniform3fv(camera_position_location, 1, reinterpret_cast<float *>(&camera_position));
+}
+
+void WaterProgram::set_bottom_texture(GLuint bottom_texture_source)
+{
+    bottom_texture.bind(this, bottom_texture_source);
 }
 
 void WaterProgram::set_environment_texture(GLuint environment_texture_source) {

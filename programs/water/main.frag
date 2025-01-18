@@ -7,7 +7,7 @@ uniform mat4 view;
 uniform mat4 projection;
 uniform vec3 camera_position;
 
-uniform vec3 bottom_point;
+uniform vec3 bottom_angle;
 uniform vec3 bottom_normal;
 uniform vec2 bottom_size;
 uniform sampler2D bottom_texture;
@@ -42,6 +42,15 @@ vec3 get_ray_coef(vec3 point_start, vec3 point_end){
 
 layout (location = 0) out vec4 out_color;
 
+float min(float x, float y) {
+    if (x < y) return x;
+    return y;
+}
+
+float max(float x, float y) {
+    return x + y - min(x, y);
+}
+
 void main()
 {
     vec3 dir = reflect(position - camera_position, normal);
@@ -50,16 +59,16 @@ void main()
     float y = -atan(dir.y, length(dir.xz)) / PI + 0.5;
     vec3 color = (texture(environment_texture, vec2(x, y)).rgb) / 2;
 
-    vec4 bottom_plane = get_plane_equation(bottom_point, bottom_normal);
+    vec4 bottom_plane = get_plane_equation(bottom_angle, bottom_normal);
     vec3 ray_coef = get_ray_coef(camera_position, position);
     float t = intersect_line_with_plane(camera_position, ray_coef, bottom_plane);
+    vec3 p = camera_position + t * ray_coef;
+    vec2 bottom_texcoords = vec2(p.x, p.z) / bottom_size;
+    color = mix(color, vec3(0.0, 0.1, 1.0), 0.2);
 
-    if (t < 0)
-        out_color = vec4(mix(color, vec3(0.0, 0.1, 1.0), 0.2), 1.0);
-    else {
-        vec3 p = camera_position + t * ray_coef;
-        vec2 bottom_texcoords = vec2(p.x, p.z) / bottom_size;
+    if (t >= 0 && max(bottom_texcoords.x, bottom_texcoords.y) <= 1.0 && min(bottom_texcoords.x, bottom_texcoords.y) >= 0) {
         vec3 bottom_color = texture(bottom_texture, bottom_texcoords).rgb;
-        out_color = vec4(0.0, 0.1, 1.0, 1.0);
+        color = mix(color, bottom_color, 0.5);
     }
+    out_color = vec4(color, 1.0);
 }

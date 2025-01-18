@@ -13,12 +13,16 @@ public:
     void set_view(glm::mat4 model);
     void set_projection(glm::mat4 model);
     void set_camera_position(glm::vec3 camera_position);
+    void set_bottom_texture(GLuint bottom_texture_source);
     void set_environment_texture(GLuint environment_texture_source);
     void fetch_time(float time);
 
     void run() override;
 
 private:
+    PoolCoordinates coordinates;
+    size_t quality;
+
     GLuint vbo;
     GLuint ebo;
 
@@ -27,8 +31,10 @@ private:
     GLuint projection_location;
     GLuint camera_position_location;
 
-    PoolCoordinates coordinates;
-    size_t quality;
+    GLuint bottom_angle_location;
+    GLuint bottom_normal_location;
+    GLuint bottom_size_location;
+    Texture bottom_texture;
 
     Texture environment_texture;
 };

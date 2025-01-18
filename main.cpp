@@ -246,6 +246,7 @@ int main() try
         water_program.set_model(model);
         water_program.set_projection(projection);
         water_program.set_view(view);
+        water_program.set_bottom_texture(bricks_texture_source);
         water_program.set_environment_texture(backgound_texture_source);
         water_program.set_camera_position(camera_position);
         water_program.fetch_time(time);

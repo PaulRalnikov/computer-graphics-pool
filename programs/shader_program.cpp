@@ -70,7 +70,10 @@ ShaderProgram::Texture::Texture(
     GLenum target,
     unsigned int texture_num
 ):
-    ShaderProgram::Texture(glGetUniformLocation(program->id, name), target, texture_num) {}
+    ShaderProgram::Texture(glGetUniformLocation(program->id, name), target, texture_num) {
+        glUseProgram(program->id);
+        glUniform1i(texture_location, texture_num);
+    }
 
 void ShaderProgram::Texture::bind(const ShaderProgram *program, GLuint texture_source)
 {
