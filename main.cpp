@@ -20,7 +20,7 @@
 #include <iostream>
 #include <chrono>
 #include <vector>
-    
+
 #include "libs/stb_image/stb_image.h"
 #include "libs/tiny_obj_loader/tiny_obj_loader.h"
 
@@ -226,6 +226,7 @@ int main() try
         water_program.set_bottom_texture(bricks_texture_source);
         water_program.set_environment_texture(backgound_texture_source);
         water_program.set_camera_position(camera_position);
+        water_program.set_sun_direction(sun_direction);
         water_program.fetch_time(time);
         water_program.run();
 

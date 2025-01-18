@@ -23,6 +23,7 @@ WaterProgram::WaterProgram(std::string vertex_shader_path, std::string fragment_
     view_location = glGetUniformLocation(id, "view");
     projection_location = glGetUniformLocation(id, "projection");
     camera_position_location = glGetUniformLocation(id, "camera_position");
+    sun_direction_location = glGetUniformLocation(id, "sun_direction");
     time_location = glGetUniformLocation(id, "time");
 
     bottom_angle_location = glGetUniformLocation(id, "bottom_angle");
@@ -70,6 +71,12 @@ void WaterProgram::set_camera_position(glm::vec3 camera_position)
 {
     glUseProgram(id);
     glUniform3fv(camera_position_location, 1, reinterpret_cast<float *>(&camera_position));
+}
+
+void WaterProgram::set_sun_direction(glm::vec3 sun_direction)
+{
+    glUseProgram(id);
+    glUniform3fv(sun_direction_location, 1, reinterpret_cast<float *>(&sun_direction));
 }
 
 void WaterProgram::set_bottom_texture(GLuint bottom_texture_source)

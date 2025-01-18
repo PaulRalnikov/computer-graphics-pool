@@ -13,6 +13,7 @@ public:
     void set_view(glm::mat4 model);
     void set_projection(glm::mat4 model);
     void set_camera_position(glm::vec3 camera_position);
+    void set_sun_direction(glm::vec3 sun_direction);
     void set_bottom_texture(GLuint bottom_texture_source);
     void set_environment_texture(GLuint environment_texture_source);
     void fetch_time(float time);
@@ -30,6 +31,7 @@ private:
     GLuint view_location;
     GLuint projection_location;
     GLuint camera_position_location;
+    GLuint sun_direction_location;
     GLuint time_location;
 
     GLuint bottom_angle_location;

@@ -6,6 +6,7 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 uniform vec3 camera_position;
+uniform vec3 sun_direction;
 uniform float time;
 
 uniform vec3 bottom_angle;
@@ -78,11 +79,14 @@ void main()
     float t = intersect_line_with_plane(camera_position, ray_coef, bottom_plane);
     vec3 p = camera_position + t * ray_coef;
     vec2 bottom_texcoords = vec2(p.x, p.z) / bottom_size;
-    // color = vec3(0.0, 0.1, 1.0);
 
     vec3 refracted_color;
     if (t >= 0 && max(bottom_texcoords.x, bottom_texcoords.y) <= 1.0 && min(bottom_texcoords.x, bottom_texcoords.y) >= 0) {
-        refracted_color = texture(bottom_texture, bottom_texcoords).rgb;
+        float ambient_light = 0.2;
+        vec3 albedo = texture(bottom_texture, bottom_texcoords).rgb;
+        float lightness = ambient_light + max(0.0, dot(bottom_normal, sun_direction));
+
+        refracted_color = lightness * albedo;
     } else {
         x = atan(refracted_direction.z, refracted_direction.x) / PI * 0.5 + 0.5;
         y = -atan(refracted_direction.y, length(refracted_direction.xz)) / PI + 0.5;
