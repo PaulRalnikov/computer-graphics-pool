@@ -25,8 +25,8 @@ in vec3 normal;
 //  x * plane.x + y * plane.y + z * plane.z + plane.w = 0;
 //returns t from line equation
 float intersect_line_with_plane(vec3 ray_point, vec3 ray_coef, vec4 plane) {
-    float num = - plane.x * ray_point.x - plane.y * ray_point.y - plane.z * ray_point.z - plane.w;
-    float den = plane.x * ray_coef.x + plane.y * ray_coef.y + plane.z * ray_coef.z;
+    float num = - dot(vec3(plane), ray_point) - plane.w;
+    float den = dot(vec3(plane), ray_coef);
     if (den != 0.0)
         return num / den;
     return -1;
@@ -61,6 +61,7 @@ void main()
 
     vec4 bottom_plane = get_plane_equation(bottom_angle, bottom_normal);
     vec3 ray_coef = get_ray_coef(camera_position, position);
+
     float t = intersect_line_with_plane(camera_position, ray_coef, bottom_plane);
     vec3 p = camera_position + t * ray_coef;
     vec2 bottom_texcoords = vec2(p.x, p.z) / bottom_size;
