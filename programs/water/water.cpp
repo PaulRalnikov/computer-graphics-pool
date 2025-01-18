@@ -78,7 +78,7 @@ float dfdy(glm::vec2 coords, float time) {
 }
 
 void WaterProgram::fetch_time(float time) {
-    glm::vec3 left_vertex = coordinates.bottom_center + glm::vec3(-coordinates.length / 2, coordinates.height, -coordinates.width / 2);
+    glm::vec3 left_vertex = coordinates.bottom_angle + glm::vec3(0.0, coordinates.height, 0.0);
     std::vector<WaterVertex> vertexes;
     for (int i = 0; i < quality; i++) {
         for (int j = 0; j < quality; j++) {

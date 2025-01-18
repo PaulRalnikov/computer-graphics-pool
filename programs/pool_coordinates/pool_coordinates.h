@@ -6,7 +6,7 @@ struct PoolCoordinates
     float width;
     float length;
     float height;
-    glm::vec3 bottom_center;
+    glm::vec3 bottom_angle;
 
     PoolCoordinates(float width, float length, float height, glm::vec3 bottom_center);
 };

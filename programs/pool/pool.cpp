@@ -31,10 +31,13 @@ PoolProgram::PoolProgram(std::string vertex_shader_path, std::string fragment_sh
     glm::vec3 left_vector(-coordinates.length / 2, 0.0, -coordinates.width / 2);
     glm::vec3 right_vector(coordinates.length / 2, 0.0, -coordinates.width / 2);
 
-    glm::vec3 bottom_1 = coordinates.bottom_center + left_vector;
-    glm::vec3 bottom_2 = coordinates.bottom_center + right_vector;
-    glm::vec3 bottom_3 = coordinates.bottom_center - left_vector;
-    glm::vec3 bottom_4 = coordinates.bottom_center - right_vector;
+    glm::vec3 x_side_vector(coordinates.length, 0.0, 0.0);
+    glm::vec3 z_side_vector(0.0, 0.0, coordinates.width);
+
+    glm::vec3 bottom_1 = coordinates.bottom_angle;
+    glm::vec3 bottom_2 = coordinates.bottom_angle + x_side_vector;
+    glm::vec3 bottom_3 = coordinates.bottom_angle + x_side_vector + z_side_vector;
+    glm::vec3 bottom_4 = coordinates.bottom_angle + z_side_vector;
 
     glm::vec3 to_top_vec(0.0, coordinates.height, 0.0);
 

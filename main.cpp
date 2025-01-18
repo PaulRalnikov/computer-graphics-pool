@@ -180,7 +180,7 @@ int main() try
         environmenmt_map_dir + "/main.vert",
         environmenmt_map_dir + "/main.frag");
 
-    PoolCoordinates pool_coordinates(20.0, 20.0, 20.0, glm::vec3(10.0, -5.0, 10.0));
+    PoolCoordinates pool_coordinates(20.0, 20.0, 20.0, glm::vec3(0.0, -5.0, 0.0));
 
     PoolProgram pool_program(
         pool_dir + "/main.vert",
