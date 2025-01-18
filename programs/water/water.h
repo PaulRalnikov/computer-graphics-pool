@@ -7,7 +7,7 @@
 class WaterProgram : public ShaderProgram {
 public:
     WaterProgram(std::string vertex_shader_path, std::string fragment_shader_path,
-                 PoolCoordinates coordinates);
+                 PoolCoordinates coordinates, size_t quality = 128);
 
     void set_model(glm::mat4 model);
     void set_view(glm::mat4 model);

@@ -177,14 +177,14 @@ int main() try
 
     // programs
     EnvironmentMapProgram environment_map_program(
-        environmenmt_map_dir + "/vertex_shader.vert",
-        environmenmt_map_dir + "/fragment_shader.frag");
+        environmenmt_map_dir + "/main.vert",
+        environmenmt_map_dir + "/main.frag");
 
     PoolCoordinates pool_coordinates(20.0, 20.0, 20.0, glm::vec3(10.0, -5.0, 10.0));
 
     PoolProgram pool_program(
-        pool_dir + "/vertex_shader.vert",
-        pool_dir + "/fragment_shader.frag",
+        pool_dir + "/main.vert",
+        pool_dir + "/main.frag",
         pool_coordinates,
         bricks_texture_source,
         bricks_texture_source);

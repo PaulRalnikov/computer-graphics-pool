@@ -11,10 +11,11 @@ struct WaterVertex{
         position(position), normal(normal){}
 };
 
-WaterProgram::WaterProgram(std::string vertex_shader_path, std::string fragment_shader_path, PoolCoordinates coordinates):
+WaterProgram::WaterProgram(std::string vertex_shader_path, std::string fragment_shader_path,
+                           PoolCoordinates coordinates, size_t quality):
     ShaderProgram(vertex_shader_path, fragment_shader_path),
     coordinates(coordinates),
-    quality(128),
+    quality(quality),
     environment_texture(this, "environment_texture", GL_TEXTURE_2D, 0)
 {
     model_location = glGetUniformLocation(id, "model");
@@ -82,10 +83,9 @@ void WaterProgram::fetch_time(float time) {
     for (int i = 0; i < quality; i++) {
         for (int j = 0; j < quality; j++) {
             glm::vec2 water_coords(coordinates.length * i / (quality - 1), coordinates.width * j / (quality - 1));
-            vertexes.push_back(WaterVertex(
-                left_vertex + glm::vec3(water_coords.x, f(water_coords, time), water_coords.y),
-                glm::normalize(glm::vec3(-dfdx(water_coords, time), 1.0, -dfdy(water_coords, time)))
-            ));
+            glm::vec3 position = left_vertex + glm::vec3(water_coords.x, f(water_coords, time), water_coords.y);
+            glm::vec3 normal = glm::normalize(glm::vec3(-dfdx(water_coords, time), 1.0, -dfdy(water_coords, time)));
+            vertexes.push_back(WaterVertex(position, normal));
         }
     }
 
