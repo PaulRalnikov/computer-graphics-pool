@@ -82,7 +82,7 @@ void WaterProgram::set_environment_texture(GLuint environment_texture_source) {
 }
 
 float f(glm::vec2 coords, float time) {
-    return std::sin(coords.x + time) + cos(coords.y + time);
+    return (std::sin(coords.x / 2.0 + time) + cos(coords.y / 2.0 + time)) / 2.0;
 }
 
 float dfdx(glm::vec2 coords, float time) {

@@ -16,7 +16,6 @@ uniform sampler2D bottom_texture;
 uniform sampler2D environment_texture;
 
 in vec3 position;
-in vec3 normal;
 
 //ray: (t >= 0 is ok, t < 0 is not ok)
 //  x = ray_point.x + t * ray_coef.x
@@ -53,18 +52,17 @@ float max(float x, float y) {
 }
 
 float dfdx() {
-    return cos(position.x + time);
+    return cos(position.x / 2.0 + time) / 4.0;
 }
 
 float dfdy() {
-    return -sin(position.y + time);
+    return -sin(position.y / 2.0 + time) / 4.0;
 }
 
 void main()
 {
-    vec3 normal2 = normalize(vec3(-dfdx(), 1.0, -dfdy()));
-    // normal2 = normal;
-    vec3 dir = reflect(position - camera_position, normal2);
+    vec3 normal = normalize(vec3(-dfdx(), 1.0, -dfdy()));
+    vec3 dir = reflect(position - camera_position, normal);
 
     float x = atan(dir.z, dir.x) / PI * 0.5 + 0.5;
     float y = -atan(dir.y, length(dir.xz)) / PI + 0.5;
@@ -72,8 +70,8 @@ void main()
 
     vec3 ray_direction = normalize(position - camera_position);
     float r = 1 / 1.333;
-    float c = -dot(normal2, ray_direction);
-    vec3 refracted_direction = r * ray_direction + (r * c - sqrt(1 - r * r * (1 - c * c))) * normal2;
+    float c = -dot(normal, ray_direction);
+    vec3 refracted_direction = r * ray_direction + (r * c - sqrt(1 - r * r * (1 - c * c))) * normal;
 
     vec3 ray_coef = normalize(refracted_direction);
     vec4 bottom_plane = get_plane_equation(bottom_angle, bottom_normal);
