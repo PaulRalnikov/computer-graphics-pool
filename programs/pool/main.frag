@@ -3,6 +3,7 @@
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+uniform vec3 sun_direction;
 
 uniform sampler2D albedo_texture;
 
@@ -14,5 +15,9 @@ layout (location = 0) out vec4 out_color;
 
 void main()
 {
-    out_color = vec4(texture(albedo_texture, texcoord).rgb, 1.0);
+    float ambient_light = 0.2;
+    vec3 albedo = texture(albedo_texture, texcoord).rgb;
+    float lightness = ambient_light + max(0.0, dot(normal, sun_direction));
+
+    out_color = vec4(lightness * albedo, 1.0);
 }

@@ -12,6 +12,7 @@ public:
     void set_model(glm::mat4 model);
     void set_view(glm::mat4 model);
     void set_projection(glm::mat4 model);
+    void set_sun_direction(glm::vec3 sun_direction);
     void set_wall_texture(GLuint new_wall_texture);
 
     void run() override;
@@ -28,6 +29,7 @@ private:
     GLuint model_location;
     GLuint view_location;
     GLuint projection_location;
+    GLuint sun_direction_location;
 
     int bottom_vertex_segment_start;
     int bottom_vertex_segment_length;

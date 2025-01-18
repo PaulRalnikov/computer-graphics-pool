@@ -24,6 +24,7 @@ PoolProgram::PoolProgram(std::string vertex_shader_path, std::string fragment_sh
     model_location = glGetUniformLocation(id, "model");
     view_location = glGetUniformLocation(id, "view");
     projection_location = glGetUniformLocation(id, "projection");
+    sun_direction_location = glGetUniformLocation(id, "sun_direction");
 
     glBindVertexArray(vao);
 
@@ -42,7 +43,7 @@ PoolProgram::PoolProgram(std::string vertex_shader_path, std::string fragment_sh
     glm::vec3 top_3 = bottom_3 + to_top_vec;
     glm::vec3 top_4 = bottom_4 + to_top_vec;
 
-    glm::vec3 forward_normal(-1, 0, 0);
+    glm::vec3 back_normal(-1, 0, 0);
     glm::vec3 botoom_normal(0, 1, 0);
     glm::vec3 front_normal(1, 0, 0);
     glm::vec3 right_normal(0, 0, -1);
@@ -65,10 +66,10 @@ PoolProgram::PoolProgram(std::string vertex_shader_path, std::string fragment_sh
         PoolVertex(top_2, right_normal, glm::vec2(1.0, 0.0)),
         PoolVertex(top_3, right_normal, glm::vec2(0.0, 0.0)),
         // back
-        PoolVertex(bottom_4, front_normal, glm::vec2(0.0, 1.0)),
-        PoolVertex(bottom_3, front_normal, glm::vec2(1.0, 1.0)),
-        PoolVertex(top_3, front_normal, glm::vec2(1.0, 0.0)),
-        PoolVertex(top_4, front_normal, glm::vec2(0.0, 0.0)),
+        PoolVertex(bottom_4, back_normal, glm::vec2(0.0, 1.0)),
+        PoolVertex(bottom_3, back_normal, glm::vec2(1.0, 1.0)),
+        PoolVertex(top_3, back_normal, glm::vec2(1.0, 0.0)),
+        PoolVertex(top_4, back_normal, glm::vec2(0.0, 0.0)),
         // left
         PoolVertex(bottom_1, left_normal, glm::vec2(0.0, 1.0)),
         PoolVertex(bottom_4, left_normal, glm::vec2(1.0, 1.0)),
@@ -79,11 +80,11 @@ PoolProgram::PoolProgram(std::string vertex_shader_path, std::string fragment_sh
     std::vector<uint32_t> indices;
     for (int i = 0; i < 5; i++) {
         indices.push_back(i * 4 + 0);
+        indices.push_back(i * 4 + 2);
         indices.push_back(i * 4 + 1);
         indices.push_back(i * 4 + 2);
-        indices.push_back(i * 4 + 2);
-        indices.push_back(i * 4 + 3);
         indices.push_back(i * 4 + 0);
+        indices.push_back(i * 4 + 3);
     }
 
     bottom_vertex_segment_start = 0;
@@ -123,6 +124,11 @@ void PoolProgram::set_projection(glm::mat4 projection)
 {
     glUseProgram(id);
     glUniformMatrix4fv(projection_location, 1, GL_FALSE, reinterpret_cast<float *>(&projection));
+}
+
+void PoolProgram::set_sun_direction(glm::vec3 sun_direction) {
+    glUseProgram(id);
+    glUniform3fv(sun_direction_location, 1, reinterpret_cast<float *>(&sun_direction));
 }
 
 void PoolProgram::run() {

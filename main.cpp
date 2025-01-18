@@ -221,7 +221,7 @@ int main() try
         glm::mat4 model(1.f);
         glm::mat4 projection = glm::perspective(glm::pi<float>() / 2.f, (window_size.width * 1.f) / window_size.height, near, far);
         glm::mat4 view_inverse = glm::inverse(projection * view);
-        glm::vec3 sun_direction = glm::normalize(glm::vec3(std::sin(time * 0.5f), 1.f, std::cos(time * 0.5f)));
+        glm::vec3 sun_direction = glm::normalize(glm::vec3(0.2, 1, 1));
 
         GLuint backgound_texture_source = settings.get_backgound_texture();
 
@@ -229,6 +229,7 @@ int main() try
         environment_map_program.set_view_inverse(view_inverse);
         environment_map_program.set_environment_texture(backgound_texture_source);
 
+        glEnable(GL_CULL_FACE);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         glDisable(GL_DEPTH_TEST);
@@ -237,6 +238,7 @@ int main() try
         pool_program.set_model(model);
         pool_program.set_projection(projection);
         pool_program.set_view(view);
+        pool_program.set_sun_direction(sun_direction);
 
         glEnable(GL_DEPTH_TEST);
         pool_program.run();
