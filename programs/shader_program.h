@@ -8,13 +8,12 @@ public:
 
     class Texture {
     public:
-        Texture(GLuint texture_location = 0, GLenum target = 0, unsigned int texture_num = 0);
-
         Texture(const ShaderProgram *program, const GLchar* name, GLenum target, unsigned int texture_num);
 
-        void bind(const ShaderProgram *program, GLuint texture_source);
+        void bind(GLuint texture_source);
 
     private:
+        const ShaderProgram* program; 
         GLuint texture_location;
         GLenum target;
         unsigned int texture_num;

@@ -74,11 +74,11 @@ void WaterProgram::set_camera_position(glm::vec3 camera_position)
 
 void WaterProgram::set_bottom_texture(GLuint bottom_texture_source)
 {
-    bottom_texture.bind(this, bottom_texture_source);
+    bottom_texture.bind(bottom_texture_source);
 }
 
 void WaterProgram::set_environment_texture(GLuint environment_texture_source) {
-    environment_texture.bind(this, environment_texture_source);
+    environment_texture.bind(environment_texture_source);
 }
 
 float f(glm::vec2 coords, float time) {

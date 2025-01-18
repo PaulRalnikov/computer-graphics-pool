@@ -20,7 +20,7 @@ void EnvironmentMapProgram::set_camera_position(glm::vec3 camera_position) {
 
 void EnvironmentMapProgram::set_environment_texture(GLuint environment_texture_source) {
     glUseProgram(id);
-    environment_texture.bind(this, environment_texture_source);
+    environment_texture.bind(environment_texture_source);
 }
 
 void EnvironmentMapProgram::run() {

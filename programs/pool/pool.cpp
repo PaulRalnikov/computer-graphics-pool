@@ -140,8 +140,8 @@ void PoolProgram::run() {
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 
-    texture.bind(this, bottom_texture);
+    texture.bind(bottom_texture);
     glDrawElements(GL_TRIANGLES, bottom_vertex_segment_length, GL_UNSIGNED_INT, (void *)(bottom_vertex_segment_start * sizeof(int)));
-    texture.bind(this, wall_texture);
+    texture.bind(wall_texture);
     glDrawElements(GL_TRIANGLES, wall_vertex_segment_length, GL_UNSIGNED_INT, (void *)(wall_vertex_segment_start * sizeof(int)));
 }

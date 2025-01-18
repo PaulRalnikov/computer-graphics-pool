@@ -58,24 +58,20 @@ ShaderProgram::ShaderProgram(std::string vertex_shader_path, std::string fragmen
     glGenVertexArrays(1, &vao);
 }
 
-ShaderProgram::Texture::Texture(GLuint texture_location, GLenum target, unsigned int texture_num) :
-    texture_location(texture_location),
-    target(target),
-    texture_num(texture_num)
-{}
-
 ShaderProgram::Texture::Texture(
     const ShaderProgram* program,
     const GLchar* name,
     GLenum target,
     unsigned int texture_num
 ):
-    ShaderProgram::Texture(glGetUniformLocation(program->id, name), target, texture_num) {
-        glUseProgram(program->id);
-        glUniform1i(texture_location, texture_num);
-    }
+    target(target), texture_num(texture_num), program(program)
+{
+    glUseProgram(program->id);
+    texture_location = glGetUniformLocation(program->id, name);
+    glUniform1i(texture_location, texture_num);
+}
 
-void ShaderProgram::Texture::bind(const ShaderProgram *program, GLuint texture_source)
+void ShaderProgram::Texture::bind(GLuint texture_source)
 {
     glUseProgram(program->id);
     glActiveTexture(GL_TEXTURE0 + texture_num);
