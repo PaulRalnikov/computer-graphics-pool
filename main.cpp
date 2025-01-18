@@ -1,14 +1,4 @@
-#include <cmath>
 #include <cassert>
-#include <cstddef>
-#include <cstdint>
-#include <array>
-#include <map>
-#include <iterator>
-#include <malloc.h>
-#include <optional>
-#include <tuple>
-#include <fstream>
 
 #ifdef WIN32
 #include <SDL.h>
@@ -23,9 +13,6 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <libs/glm/vec3.hpp>
 #include <libs/glm/mat4x4.hpp>
-#include <libs/glm/ext/matrix_transform.hpp>
-#include <libs/glm/ext/matrix_clip_space.hpp>
-#include <libs/glm/ext/scalar_constants.hpp>
 #include <libs/glm/gtx/string_cast.hpp>
 
 #include <string_view>
@@ -33,8 +20,7 @@
 #include <iostream>
 #include <chrono>
 #include <vector>
-#include <algorithm>
-#include <utility>
+
 #include "libs/stb_image/stb_image.h"
 #include "libs/tiny_obj_loader/tiny_obj_loader.h"
 
@@ -69,15 +55,6 @@ void sdl2_fail(std::string_view message)
 void glew_fail(std::string_view message, GLenum error)
 {
     throw std::runtime_error(to_string(message) + reinterpret_cast<const char *>(glewGetErrorString(error)));
-}
-
-bool file_exists_test (const std::string& name) {
-    if (FILE *file = fopen(name.c_str(), "r")) {
-        fclose(file);
-        return true;
-    } else {
-        return false;
-    } 
 }
 
 void check_error() {
