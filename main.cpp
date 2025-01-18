@@ -20,15 +20,15 @@
 #include <iostream>
 #include <chrono>
 #include <vector>
-
+    
 #include "libs/stb_image/stb_image.h"
 #include "libs/tiny_obj_loader/tiny_obj_loader.h"
 
-#include "frame_time_observer.h"
-#include "camera.h"
-#include "window_size.h"
-#include "window_flags.h"
-#include "event_handler.h"
+#include "helpers/frame_time_observer.h"
+#include "helpers/camera.h"
+#include "helpers/window_size.h"
+#include "helpers/window_flags.h"
+#include "helpers/event_handler.h"
 #include "programs/shader_program.h"
 #include "programs/environment_map/environment_map_program.h"
 #include "programs/pool/pool.h"
