@@ -30,6 +30,7 @@ private:
     GLuint view_location;
     GLuint projection_location;
     GLuint camera_position_location;
+    GLuint time_location;
 
     GLuint bottom_angle_location;
     GLuint bottom_normal_location;

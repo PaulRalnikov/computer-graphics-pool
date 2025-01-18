@@ -23,13 +23,14 @@ WaterProgram::WaterProgram(std::string vertex_shader_path, std::string fragment_
     view_location = glGetUniformLocation(id, "view");
     projection_location = glGetUniformLocation(id, "projection");
     camera_position_location = glGetUniformLocation(id, "camera_position");
+    time_location = glGetUniformLocation(id, "time");
 
     bottom_angle_location = glGetUniformLocation(id, "bottom_angle");
     bottom_normal_location = glGetUniformLocation(id, "bottom_normal");
     bottom_size_location = glGetUniformLocation(id, "bottom_size");
 
     glUseProgram(id);
-    glUniform3fv(bottom_angle_location, 1, reinterpret_cast<float *>(&coordinates.bottom_angle));
+    glUniform3fv(bottom_angle_location, 1, reinterpret_cast<float *>(&coordinates.bottom_corner));
     glUniform3f(bottom_normal_location, 0.0, 1.0, 0.0);
     glUniform2f(bottom_size_location, coordinates.length, coordinates.width);
 
@@ -93,7 +94,9 @@ float dfdy(glm::vec2 coords, float time) {
 }
 
 void WaterProgram::fetch_time(float time) {
-    glm::vec3 left_vertex = coordinates.bottom_angle + glm::vec3(0.0, coordinates.height, 0.0);
+    glUseProgram(id);
+    glUniform1f(time_location, time);
+    glm::vec3 left_vertex = coordinates.bottom_corner + glm::vec3(0.0, coordinates.height, 0.0);
     std::vector<WaterVertex> vertexes;
     for (int i = 0; i < quality; i++) {
         for (int j = 0; j < quality; j++) {
