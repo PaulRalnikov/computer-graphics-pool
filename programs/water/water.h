@@ -35,8 +35,9 @@ private:
     GLuint time_location;
 
     GLuint bottom_angle_location;
-    GLuint bottom_normal_location;
-    GLuint bottom_size_location;
+    GLuint bottom_x_side_location;
+    GLuint bottom_y_side_location;
+    
     Texture bottom_texture;
 
     Texture environment_texture;

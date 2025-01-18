@@ -10,8 +10,9 @@ uniform vec3 sun_direction;
 uniform float time;
 
 uniform vec3 bottom_angle;
-uniform vec3 bottom_normal;
-uniform vec2 bottom_size;
+uniform vec3 bottom_x_side;
+uniform vec3 bottom_y_side;
+
 uniform sampler2D bottom_texture;
 
 uniform sampler2D environment_texture;
@@ -60,8 +61,12 @@ float dfdy() {
     return -sin(position.y / 2.0 + time) / 4.0;
 }
 
+float get_projection_length(vec3 direction, vec3 v) {
+    return length(v) * dot(normalize(direction), normalize(v)) / length(direction);
+}
+
 void main()
-{
+{   
     vec3 normal = normalize(vec3(-dfdx(), 1.0, -dfdy()));
     vec3 dir = reflect(position - camera_position, normal);
 
@@ -74,11 +79,16 @@ void main()
     float c = -dot(normal, ray_direction);
     vec3 refracted_direction = r * ray_direction + (r * c - sqrt(1 - r * r * (1 - c * c))) * normal;
 
+    vec3 bottom_normal = -normalize(cross(bottom_x_side, bottom_y_side));
     vec3 ray_coef = normalize(refracted_direction);
     vec4 bottom_plane = get_plane_equation(bottom_angle, bottom_normal);
-    float t = intersect_line_with_plane(camera_position, ray_coef, bottom_plane);
-    vec3 p = camera_position + t * ray_coef;
-    vec2 bottom_texcoords = vec2(p.x, p.z) / bottom_size;
+    float t = intersect_line_with_plane(position, ray_coef, bottom_plane);
+    vec3 p = position + t * ray_coef;
+    vec3 bottom_p_ray = p - bottom_angle;
+    vec2 bottom_texcoords = vec2(
+        get_projection_length(bottom_x_side, bottom_p_ray),
+        get_projection_length(bottom_y_side, bottom_p_ray)
+    );
 
     vec3 refracted_color;
     if (t >= 0 && max(bottom_texcoords.x, bottom_texcoords.y) <= 1.0 && min(bottom_texcoords.x, bottom_texcoords.y) >= 0) {
