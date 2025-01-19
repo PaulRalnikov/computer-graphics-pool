@@ -1,6 +1,7 @@
 #version 330 core
 
 const float PI = 3.141592653589793;
+const float refraction_mix_coef = 0.7;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -129,7 +130,12 @@ void main()
 
     vec3 ray_coef = normalize(refracted_direction);
     
-    color = add_color_from_rectangle(color, bottom_angle, bottom_x_side, bottom_y_side, bottom_texture, position, ray_coef, 0.8);
+    color = add_color_from_rectangle(color, bottom_angle, bottom_x_side, bottom_y_side, bottom_texture, position, ray_coef, refraction_mix_coef);
+    color = add_color_from_rectangle(color, front_angle, front_x_side, front_y_side, wall_texture, position, ray_coef, refraction_mix_coef);
+    color = add_color_from_rectangle(color, right_angle, right_x_side, right_y_side, wall_texture, position, ray_coef, refraction_mix_coef);
+    color = add_color_from_rectangle(color, back_angle, back_x_side, back_y_side, wall_texture, position, ray_coef, refraction_mix_coef);
+    color = add_color_from_rectangle(color, left_angle, left_x_side, left_y_side, wall_texture, position, ray_coef, refraction_mix_coef);
+
     color = mix(color, vec3(0.0, 0.1, 1.0), 0.2);
     out_color = vec4(color, 1.0);
 }

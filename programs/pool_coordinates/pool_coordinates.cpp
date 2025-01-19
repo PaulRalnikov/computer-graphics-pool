@@ -42,5 +42,5 @@ Rectangle PoolCoordinates::get_back() const
 
 Rectangle PoolCoordinates::get_left() const
 {
-    return Rectangle(bottom_corner, glm::vec3(0.0, 0.0, width), glm::vec3(0.0, height, 0.0));
+    return Rectangle(bottom_corner, glm::vec3(0.0, height, 0.0), glm::vec3(0.0, 0.0, width));
 }

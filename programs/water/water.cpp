@@ -27,23 +27,46 @@ WaterProgram::WaterProgram(std::string vertex_shader_path, std::string fragment_
     sun_direction_location = glGetUniformLocation(id, "sun_direction");
     time_location = glGetUniformLocation(id, "time");
 
+    glUseProgram(id);
+    Rectangle bottom = coordinates.get_bottom();
     GLuint bottom_angle_location = glGetUniformLocation(id, "bottom_angle");
     GLuint bottom_x_side_location = glGetUniformLocation(id, "bottom_x_side");
     GLuint bottom_y_side_location = glGetUniformLocation(id, "bottom_y_side");
-
-    GLuint front_angle_location = glGetUniformLocation(id, "front_angle");
-    GLuint front_x_side_location = glGetUniformLocation(id, "front_x_side");
-    GLuint front_y_side_location = glGetUniformLocation(id, "front_y_side");
-
-    glUseProgram(id);
-    Rectangle bottom = coordinates.get_bottom();
     glUniform3fv(bottom_angle_location, 1, reinterpret_cast<float *>(&bottom.corner));
     glUniform3fv(bottom_x_side_location, 1, reinterpret_cast<float *>(&bottom.x_side));
     glUniform3fv(bottom_y_side_location, 1, reinterpret_cast<float *>(&bottom.y_side));
 
-    glUniform3fv(front_angle_location, 1, reinterpret_cast<float *>(&coordinates.bottom_corner));
-    glUniform3f(front_x_side_location, coordinates.length, 0.0, 0.0);
-    glUniform3f(front_y_side_location, 0.0, 0.0, coordinates.width);
+    Rectangle front = coordinates.get_front();
+    GLuint front_angle_location = glGetUniformLocation(id, "front_angle");
+    GLuint front_x_side_location = glGetUniformLocation(id, "front_x_side");
+    GLuint front_y_side_location = glGetUniformLocation(id, "front_y_side");
+    glUniform3fv(front_angle_location, 1, reinterpret_cast<float *>(&front.corner));
+    glUniform3fv(front_x_side_location, 1, reinterpret_cast<float *>(&front.x_side));
+    glUniform3fv(front_y_side_location, 1, reinterpret_cast<float *>(&front.y_side));
+
+    Rectangle right = coordinates.get_right();
+    GLuint right_angle_location = glGetUniformLocation(id, "right_angle");
+    GLuint right_x_side_location = glGetUniformLocation(id, "right_x_side");
+    GLuint right_y_side_location = glGetUniformLocation(id, "right_y_side");
+    glUniform3fv(right_angle_location, 1, reinterpret_cast<float *>(&right.corner));
+    glUniform3fv(right_x_side_location, 1, reinterpret_cast<float *>(&right.x_side));
+    glUniform3fv(right_y_side_location, 1, reinterpret_cast<float *>(&right.y_side));
+
+    Rectangle back = coordinates.get_back();
+    GLuint back_angle_location = glGetUniformLocation(id, "back_angle");
+    GLuint back_x_side_location = glGetUniformLocation(id, "back_x_side");
+    GLuint back_y_side_location = glGetUniformLocation(id, "back_y_side");
+    glUniform3fv(back_angle_location, 1, reinterpret_cast<float *>(&back.corner));
+    glUniform3fv(back_x_side_location, 1, reinterpret_cast<float *>(&back.x_side));
+    glUniform3fv(back_y_side_location, 1, reinterpret_cast<float *>(&back.y_side));
+
+    Rectangle left = coordinates.get_left();
+    GLuint left_angle_location = glGetUniformLocation(id, "left_angle");
+    GLuint left_x_side_location = glGetUniformLocation(id, "left_x_side");
+    GLuint left_y_side_location = glGetUniformLocation(id, "left_y_side");
+    glUniform3fv(left_angle_location, 1, reinterpret_cast<float *>(&left.corner));
+    glUniform3fv(left_x_side_location, 1, reinterpret_cast<float *>(&left.x_side));
+    glUniform3fv(left_y_side_location, 1, reinterpret_cast<float *>(&left.y_side));
 
     glBindVertexArray(vao);
 
