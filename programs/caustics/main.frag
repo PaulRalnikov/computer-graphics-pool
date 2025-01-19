@@ -10,5 +10,5 @@ layout (location = 0) out vec4 out_color;
 void main() {
     vec3 normal = normalize(cross(x_side_vector, y_side_vector));
     float lightness = max(0.0, dot(-refracted_direction, normal));
-    out_color = vec4(lightness * 5.0, 0.0, 0.0, 1.0);
+    out_color = vec4(lightness, 0.0, 0.0, 1.0);
 }

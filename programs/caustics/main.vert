@@ -41,12 +41,12 @@ float max(float x, float y) {
     return x + y - min(x, y);
 }
 
-float dfdx(float x) {
-    return cos(x / 2.0 + time) / 4.0;
+float dfdx(float x, float y) {
+    return (cos(x + time) + sin(x + y + time)) / 2.0;
 }
 
-float dfdy(float y) {
-    return -sin(y / 2.0 + time) / 4.0;
+float dfdy(float x, float y) {
+    return (-sin(y + time) + sin(x + y + time)) / 2.0;
 }
 
 float get_projection_length(vec3 direction, vec3 v) {
@@ -56,7 +56,7 @@ float get_projection_length(vec3 direction, vec3 v) {
 void main()
 {
     vec3 position = (model * vec4(in_position, 1.0)).xyz;
-    vec3 normal = normalize(vec3(-dfdx(position.x), 1.0, -dfdy(position.y)));
+    vec3 normal = normalize(vec3(-dfdx(position.x, position.y), 1.0, -dfdy(position.x, position.y)));
 
     vec3 sun_ray_direction = -sun_direction;
     float r = 1 / 1.333;

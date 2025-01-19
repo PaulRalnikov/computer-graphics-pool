@@ -1,7 +1,6 @@
 #version 330 core
 
 const float PI = 3.141592653589793;
-const float refraction_mix_coef = 0.7;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -58,11 +57,11 @@ float max(float x, float y) {
 }
 
 float dfdx() {
-    return cos(position.x / 2.0 + time) / 4.0;
+    return (cos(position.x + time) + cos(position.x + position.y + time)) / 2.0;
 }
 
 float dfdy() {
-    return -sin(position.y / 2.0 + time) / 4.0;
+    return (-sin(position.y + time) + cos(position.x + position.y + time)) / 2.0;
 }
 
 float get_projection_length(vec3 direction, vec3 v) {
@@ -100,7 +99,7 @@ vec3 add_color_from_rectangle(
         float lightness = ambient_light + texture(caustics_texture, texcoords * 0.5 + 0.5).r;
 
         vec3 refracted_color = lightness * albedo;
-        return mix(in_color, refracted_color, mix_coef);
+        return mix(in_color, refracted_color, 1 - mix_coef);
     }
     return in_color;
 }
@@ -124,6 +123,19 @@ layout (location = 0) out vec4 out_color;
 void main()
 {   
     vec3 normal = normalize(vec3(-dfdx(), 1.0, -dfdy()));
+    // vec3 normal = normalize(vec3(0, 1.0, 0));
+
+    float cos_theta = dot(normalize(camera_position - position), normal);
+
+    float n_1 = 1.0;
+    float n_2 = 1.333;
+    float R_0 = pow((n_1 - n_2) / (n_1 + n_2), 2);
+
+    float R = R_0 + (1 - R_0) * pow((1 - cos_theta), 5);
+
+    if (R < 0) discard;
+    if (R > 1.0) R = 1.0;
+
     vec3 dir = reflect(position - camera_position, normal);
 
     float x = atan(dir.z, dir.x) / PI * 0.5 + 0.5;
@@ -137,11 +149,11 @@ void main()
 
     vec3 ray_coef = normalize(refracted_direction);
     
-    color = add_color_from_rectangle(color, 0, bottom_texture, bottom_caustics_texture, position, ray_coef, refraction_mix_coef);
-    color = add_color_from_rectangle(color, 1, wall_texture, front_caustics_texture, position, ray_coef, refraction_mix_coef);
-    color = add_color_from_rectangle(color, 2, wall_texture, right_caustics_texture, position, ray_coef, refraction_mix_coef);
-    color = add_color_from_rectangle(color, 3, wall_texture, back_caustics_texture, position, ray_coef, refraction_mix_coef);
-    color = add_color_from_rectangle(color, 4, wall_texture, left_caustics_texture, position, ray_coef, refraction_mix_coef);
+    color = add_color_from_rectangle(color, 0, bottom_texture, bottom_caustics_texture, position, ray_coef, R);
+    color = add_color_from_rectangle(color, 1, wall_texture, front_caustics_texture, position, ray_coef, R);
+    color = add_color_from_rectangle(color, 2, wall_texture, right_caustics_texture, position, ray_coef, R);
+    color = add_color_from_rectangle(color, 3, wall_texture, back_caustics_texture, position, ray_coef, R);
+    color = add_color_from_rectangle(color, 4, wall_texture, left_caustics_texture, position, ray_coef, R);
 
     color = mix(color, vec3(0.0, 0.1, 1.0), 0.2);
 
