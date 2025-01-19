@@ -34,6 +34,8 @@
 #include "programs/pool/pool.h"
 #include "programs/water/water.h"
 #include "programs/caustics/caustics.h"
+#include "programs/external_structs/water_surface/water_surface.h"
+#include "programs/external_structs/pool_coordinates/pool_coordinates.h"
 
 const std::string project_root = PROJECT_ROOT;
 const std::string programs_dir = project_root + "/programs";
@@ -165,6 +167,7 @@ int main() try
     EventHandler handler(window_size, settings, camera);
 
     PoolCoordinates pool_coordinates(20.0, 40.0, 30.0, glm::vec3(0.0, -5.0, 0.0));
+    WaterSurface water_surface(pool_coordinates, 128);
 
     // programs
     EnvironmentMapProgram environment_map_program(
@@ -180,7 +183,7 @@ int main() try
     WaterProgram water_program(
         water_dir + "/main.vert",
         water_dir + "/main.frag",
-        pool_coordinates
+        water_surface
     );
     CausticsProgram CausticsProgram(
         caustics_dir + "/main.vert",
@@ -225,6 +228,8 @@ int main() try
         pool_program.set_wall_texture(pool_wall_texture_source);
         pool_program.run();
 
+        water_surface.fetch_time(time);
+        
         water_program.set_model(model);
         water_program.set_projection(projection);
         water_program.set_view(view);
@@ -233,7 +238,7 @@ int main() try
         water_program.set_environment_texture(backgound_texture_source);
         water_program.set_camera_position(camera_position);
         water_program.set_sun_direction(sun_direction);
-        water_program.fetch_time(time);
+        water_program.set_time(time);
         water_program.run();
 
         check_error();

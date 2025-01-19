@@ -3,11 +3,9 @@
 #include <iostream>
 #include <libs/glm/gtx/string_cast.hpp>
 
-WaterProgram::WaterProgram(std::string vertex_shader_path, std::string fragment_shader_path,
-                           PoolCoordinates coordinates, size_t quality):
+WaterProgram::WaterProgram(std::string vertex_shader_path, std::string fragment_shader_path, WaterSurface& surface):
     ShaderProgram(vertex_shader_path, fragment_shader_path),
-    coordinates(coordinates),
-    quality(quality),
+    surface(surface),
     bottom_texture(this, "bottom_texture", GL_TEXTURE_2D, 0),
     wall_texture(this, "wall_texture", GL_TEXTURE_2D, 1),
     environment_texture(this, "environment_texture", GL_TEXTURE_2D, 2)
@@ -20,6 +18,7 @@ WaterProgram::WaterProgram(std::string vertex_shader_path, std::string fragment_
     time_location = glGetUniformLocation(id, "time");
 
     glUseProgram(id);
+    const PoolCoordinates& coordinates = surface.get_pool_coordinates();
     Rectangle bottom = coordinates.get_bottom();
     GLuint bottom_angle_location = glGetUniformLocation(id, "bottom_angle");
     GLuint bottom_x_side_location = glGetUniformLocation(id, "bottom_x_side");
@@ -59,18 +58,6 @@ WaterProgram::WaterProgram(std::string vertex_shader_path, std::string fragment_
     glUniform3fv(left_angle_location, 1, reinterpret_cast<float *>(&left.corner));
     glUniform3fv(left_x_side_location, 1, reinterpret_cast<float *>(&left.x_side));
     glUniform3fv(left_y_side_location, 1, reinterpret_cast<float *>(&left.y_side));
-
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-
-    glGenBuffers(1, &vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-
-    glGenBuffers(1, &ebo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void *)(0));
 }
 
 void WaterProgram::set_model(glm::mat4 model)
@@ -117,56 +104,14 @@ void WaterProgram::set_environment_texture(GLuint environment_texture_source) {
     environment_texture.bind(environment_texture_source);
 }
 
-float f(glm::vec2 coords, float time) {
-    return (std::sin(coords.x / 2.0 + time) + cos(coords.y / 2.0 + time)) / 2.0;
-}
-
-float dfdx(glm::vec2 coords, float time) {
-    return std::cos(coords.x + time);
-}
-
-float dfdy(glm::vec2 coords, float time) {
-    return -std::sin(coords.y + time);
-}
-
-void WaterProgram::fetch_time(float time) {
+void WaterProgram::set_time(float time) {
     glUseProgram(id);
     glUniform1f(time_location, time);
-    glm::vec3 left_vertex = coordinates.bottom_corner + glm::vec3(0.0, coordinates.height, 0.0);
-    std::vector<glm::vec3> vertexes;
-    for (int i = 0; i < quality; i++) {
-        for (int j = 0; j < quality; j++) {
-            glm::vec2 water_coords(coordinates.length * i / (quality - 1), coordinates.width * j / (quality - 1));
-            glm::vec3 position = left_vertex + glm::vec3(water_coords.x, f(water_coords, time), water_coords.y);
-            vertexes.push_back(position);
-        }
-    }
-
-    std::vector<uint32_t> indexes;
-    for (int i = 0; i < quality - 1; i++) {
-        for (int j = 0; j < quality - 1; j++) {
-            indexes.push_back((i + 0) * quality + j + 0);
-            indexes.push_back((i + 0) * quality + j + 1);
-            indexes.push_back((i + 1) * quality + j + 1);
-
-            indexes.push_back((i + 1) * quality + j + 1);
-            indexes.push_back((i + 1) * quality + j + 0);
-            indexes.push_back((i + 0) * quality + j + 0);
-        }
-    }
-
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, vertexes.size() * sizeof(vertexes[0]), vertexes.data(), GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexes.size() * sizeof(indexes[0]), indexes.data(), GL_STATIC_DRAW);
 }
 
 void WaterProgram::run() {
     glUseProgram(id);
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+    surface.bind_buffers();
 
-    glDrawElements(GL_TRIANGLES, (quality - 1) * (quality - 1) * 6, GL_UNSIGNED_INT, (void *)(0));
+    glDrawElements(GL_TRIANGLES, surface.get_indexes_count(), GL_UNSIGNED_INT, (void *)(0));
 }
