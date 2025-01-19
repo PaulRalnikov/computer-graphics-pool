@@ -24,6 +24,10 @@ public:
 
     PoolCoordinates(float width, float length, float height, glm::vec3 bottom_center);
 
+    glm::vec3 x() const;
+    glm::vec3 y() const;
+    glm::vec3 z() const;
+
     Rectangle get_bottom() const;
     Rectangle get_front() const;
     Rectangle get_right() const;

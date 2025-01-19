@@ -2,19 +2,29 @@
 #include <stdexcept>
 #include <string>
 
-WindowSettings::WindowSettings(std::vector<GLuint> texture_source_cycle) :
+TextureCycle::TextureCycle(std::vector<GLuint> texture_cycle):
+    texture_cycle(texture_cycle), current_texture_index(0) {}
+
+GLuint TextureCycle::get_current_texture() const
+{
+    return texture_cycle[current_texture_index];
+}
+
+void TextureCycle::change_texture() {
+    current_texture_index++;
+    if (current_texture_index == texture_cycle.size())
+        current_texture_index = 0;
+}
+
+WindowSettings::WindowSettings(
+    std::vector<GLuint> backgound_texture_source_cycle,
+    std::vector<GLuint> pool_wall_texture_source_cycle
+) :
     running(true),
     time_paused(false),
-    texture_source_cycle(texture_source_cycle)
-{
-    current_texture_index = 0;
-    if (current_texture_index > texture_source_cycle.size()) {
-        throw std::runtime_error(
-            "Texture sourse cycle is too short; its length is " + std::to_string(texture_source_cycle.size())
-        );
-    }
-
-}
+    backgound_texture_cycle(backgound_texture_source_cycle),
+    pool_wall_texture_cycle(pool_wall_texture_source_cycle)
+{}
 
 void WindowSettings::quit()
 {
@@ -37,11 +47,18 @@ bool WindowSettings::get_time_paused() const
 }
 
 GLuint WindowSettings::get_backgound_texture() const {
-    return texture_source_cycle[current_texture_index];
+    return backgound_texture_cycle.get_current_texture();
+}
+
+GLuint WindowSettings::get_pool_wall_texture() const {
+    return pool_wall_texture_cycle.get_current_texture();
 }
 
 void WindowSettings::change_backgound_texture() {
-    current_texture_index++;
-    if (current_texture_index == texture_source_cycle.size())
-        current_texture_index = 0;
+    backgound_texture_cycle.change_texture();
+}
+
+void WindowSettings::change_pool_wall_texture()
+{
+    pool_wall_texture_cycle.change_texture();
 }

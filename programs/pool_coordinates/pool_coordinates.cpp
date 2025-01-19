@@ -25,22 +25,34 @@ Rectangle PoolCoordinates::get_bottom() const{
     return Rectangle(bottom_corner, glm::vec3(0.0, 0.0, width), glm::vec3(length, 0.0, 0.0));
 }
 
+glm::vec3 PoolCoordinates::x() const {
+    return glm::vec3(length, 0.0, 0.0);
+}
+
+glm::vec3 PoolCoordinates::y() const{
+    return glm::vec3(0.0, height, 0.0);
+}
+
+glm::vec3 PoolCoordinates::z() const {
+    return glm::vec3(0.0, 0.0, width);
+}
+
 Rectangle PoolCoordinates::get_front() const
 {
-    return Rectangle(bottom_corner + glm::vec3(length, 0.0, 0.0), glm::vec3(0.0, height, 0.0), glm::vec3(-length, 0.0, 0.0));
+    return Rectangle(bottom_corner + x() + y(), -x(), -y());
 }
 
 Rectangle PoolCoordinates::get_right() const
 {
-    return Rectangle(bottom_corner + glm::vec3(length, 0.0, width), glm::vec3(0.0, height, 0.0), glm::vec3(0.0, 0.0, -width));
+    return Rectangle(bottom_corner + x() + y() + z(), -z(), -y());
 }
 
 Rectangle PoolCoordinates::get_back() const
 {
-    return Rectangle(bottom_corner + glm::vec3(0.0, 0.0, width), glm::vec3(0.0, height, 0.0), glm::vec3(length, 0.0, 0.0));
+    return Rectangle(bottom_corner + y() + z(), x(), -y());
 }
 
 Rectangle PoolCoordinates::get_left() const
 {
-    return Rectangle(bottom_corner, glm::vec3(0.0, height, 0.0), glm::vec3(0.0, 0.0, width));
+    return Rectangle(bottom_corner + y(), z(), -y());
 }

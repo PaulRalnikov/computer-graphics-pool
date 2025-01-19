@@ -157,7 +157,7 @@ int main() try
         environmenmt_map_dir + "/main.vert",
         environmenmt_map_dir + "/main.frag");
 
-    PoolCoordinates pool_coordinates(20.0, 20.0, 20.0, glm::vec3(0.0, -5.0, 0.0));
+    PoolCoordinates pool_coordinates(20.0, 40.0, 30.0, glm::vec3(0.0, -5.0, 0.0));
 
     PoolProgram pool_program(
         pool_dir + "/main.vert",
@@ -177,6 +177,10 @@ int main() try
         std::vector<GLuint>({
             school_texture_source,
             forest_texture_source,
+            billy_texture_source
+        }),
+        std::vector<GLuint>({
+            bricks_texture_source,
             billy_texture_source
         })
     );
@@ -224,7 +228,7 @@ int main() try
         water_program.set_projection(projection);
         water_program.set_view(view);
         water_program.set_bottom_texture(bricks_texture_source);
-        water_program.set_wall_texture(bricks_texture_source);
+        water_program.set_wall_texture(settings.get_pool_wall_texture());
         water_program.set_environment_texture(backgound_texture_source);
         water_program.set_camera_position(camera_position);
         water_program.set_sun_direction(sun_direction);
