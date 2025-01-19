@@ -33,7 +33,7 @@ void main()
     float ambient_light = 0.2;
     vec2 albedo_texcoords = vec2(texcoord.x, 1 - texcoord.y);
     vec3 albedo = texture(albedo_texture, albedo_texcoords).rgb;
-    float caustics = texture(caustics_texture, texcoord).r;
+    float caustics = texture(caustics_texture, texcoord * 0.5 + 0.5).r;
     float lightness = ambient_light + max(0.0, dot(normal, sun_direction));
 
     vec3 color = (caustics + ambient_light) * albedo;

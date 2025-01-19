@@ -97,7 +97,7 @@ vec3 add_color_from_rectangle(
     if (t >= 0 && max(texcoords.x, texcoords.y) <= 1.0 && min(texcoords.x, texcoords.y) >= 0) {
         float ambient_light = 0.2;
         vec3 albedo = texture(rectangle_texture, albedo_texcoords).rgb;
-        float lightness = ambient_light + texture(caustics_texture, texcoords).r;
+        float lightness = ambient_light + texture(caustics_texture, texcoords * 0.5 + 0.5).r;
 
         vec3 refracted_color = lightness * albedo;
         return mix(in_color, refracted_color, mix_coef);

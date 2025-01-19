@@ -168,7 +168,7 @@ int main() try
     GLuint forest_texture_source = load_texture(textures_dir + "/forest.jpg");
     GLuint bricks_texture_source = load_texture(textures_dir + "/bricks_diff.png");
 
-    Camera camera(glm::vec3(0.0), -0.2, 1.5);
+    Camera camera(glm::vec3(0.0, 20.0, 0.0), -0.2, 1.5);
     WindowSettings settings(
         std::vector<GLuint>({school_texture_source,
                              forest_texture_source,
@@ -246,6 +246,7 @@ int main() try
         caustics_program.set_model(model);
         caustics_program.set_sun_direction(sun_direction);
         caustics_program.set_time(time);
+
         for (size_t i = 0; i < PoolCoordinates::NUM_SIDES; i++) {
             Rectangle side = pool_coordinates.get_side(i);
             caustics_program.set_caustics_texture_source(caustics_textures[i]);
