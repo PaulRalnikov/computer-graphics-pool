@@ -108,6 +108,20 @@ vec3 add_color_from_rectangle(
     return in_color;
 }
 
+vec3 TonemapRaw(vec3 x){
+    float A = 0.15;
+    float B = 0.50;
+    float C = 0.10;
+    float D = 0.20;
+    float E = 0.02;
+    float F = 0.30;
+    return ((x * (A * x + C * B) + D * E) / (x * (A * x + B) + D * F)) - E / F;
+}
+vec3 Uncharted2Tonemap(vec3 color){
+    float W = 11.2;
+    return TonemapRaw(color) / TonemapRaw(vec3(W));
+}
+
 layout (location = 0) out vec4 out_color;
 
 void main()
@@ -133,5 +147,10 @@ void main()
     color = add_color_from_rectangle(color, left_angle, left_x_side, left_y_side, wall_texture, position, ray_coef, refraction_mix_coef);
 
     color = mix(color, vec3(0.0, 0.1, 1.0), 0.2);
+
+    color = Uncharted2Tonemap(color);
+    //gamma correction
+    color = pow(color, vec3(1.0 / 2.2));
+
     out_color = vec4(color, 1.0);
 }
