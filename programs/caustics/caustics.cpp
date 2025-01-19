@@ -35,8 +35,39 @@ CausticsProgram::CausticsProgram(
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 }
 
+void CausticsProgram::set_model(glm::mat4 model) {
+    glUseProgram(id);
+    
+}
+void CausticsProgram::set_corner(glm::vec3 corner) {
+    glUseProgram(id);
+    glUniform3fv(corner_location, 1, reinterpret_cast<float *>(&corner));
+}
+
+void CausticsProgram::set_x_side_vector(glm::vec3 x_side_vector) {
+    glUseProgram(id);
+    glUniform3fv(x_side_vector_location, 1, reinterpret_cast<float *>(&x_side_vector));
+}
+
+void CausticsProgram::set_y_side_vector(glm::vec3 y_side_vector) {
+    glUseProgram(id);
+    glUniform3fv(y_side_vector_location, 1, reinterpret_cast<float *>(&y_side_vector));
+}
+
+void CausticsProgram::set_sun_direction(glm::vec3 sun_direction) {
+    glUseProgram(id);
+    glUniform3fv(sun_direction_location, 1, reinterpret_cast<float *>(&sun_direction));
+}
+void CausticsProgram::set_time(float time) {
+    glUseProgram(id);
+    glUniform1f(time_location, time);
+}
+
 void CausticsProgram::run() {
     glDisable(GL_CULL_FACE);
     glUseProgram(id);
-    
+    surface.bind_buffers();
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
+    glDrawElements(GL_TRIANGLES, surface.get_indexes_count(), GL_UNSIGNED_INT, (void *)(0));
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 }

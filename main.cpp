@@ -185,7 +185,7 @@ int main() try
         water_dir + "/main.frag",
         water_surface
     );
-    CausticsProgram CausticsProgram(
+    CausticsProgram caustics_program(
         caustics_dir + "/main.vert",
         caustics_dir + "/main.frag",
         water_surface,
@@ -221,7 +221,17 @@ int main() try
         environment_map_program.set_environment_texture(backgound_texture_source);
         environment_map_program.run();
 
+        Rectangle bottom = pool_coordinates.get_bottom();
+        caustics_program.set_model(model);
+        caustics_program.set_sun_direction(sun_direction);
+        caustics_program.set_time(time);
+        caustics_program.set_corner(bottom.corner);
+        caustics_program.set_x_side_vector(bottom.x_side);
+        caustics_program.set_y_side_vector(bottom.y_side);
+        caustics_program.run();
+
         glEnable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE);
         pool_program.set_model(model);
         pool_program.set_projection(projection);
         pool_program.set_view(view);
