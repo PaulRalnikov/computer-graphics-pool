@@ -33,12 +33,14 @@
 #include "programs/environment_map/environment_map_program.h"
 #include "programs/pool/pool.h"
 #include "programs/water/water.h"
+#include "programs/caustics/caustics.h"
 
 const std::string project_root = PROJECT_ROOT;
 const std::string programs_dir = project_root + "/programs";
 const std::string environmenmt_map_dir = programs_dir + "/environment_map";
 const std::string pool_dir = programs_dir + "/pool";
 const std::string water_dir = programs_dir + "/water";
+const std::string caustics_dir = programs_dir + "/caustics";
 
 const std::string textures_dir = project_root + "/textures";
 
@@ -162,24 +164,28 @@ int main() try
     );
     EventHandler handler(window_size, settings, camera);
 
+    PoolCoordinates pool_coordinates(20.0, 40.0, 30.0, glm::vec3(0.0, -5.0, 0.0));
+
     // programs
     EnvironmentMapProgram environment_map_program(
         environmenmt_map_dir + "/main.vert",
-        environmenmt_map_dir + "/main.frag");
-
-    PoolCoordinates pool_coordinates(20.0, 40.0, 30.0, glm::vec3(0.0, -5.0, 0.0));
-
+        environmenmt_map_dir + "/main.frag"
+    );
     PoolProgram pool_program(
         pool_dir + "/main.vert",
         pool_dir + "/main.frag",
         pool_coordinates,
         bricks_texture_source
     );
-
     WaterProgram water_program(
         water_dir + "/main.vert",
         water_dir + "/main.frag",
         pool_coordinates
+    );
+    CausticsProgram CausticsProgram(
+        caustics_dir + "/main.vert",
+        caustics_dir + "/main.frag",
+        256
     );
 
     while (settings.get_running())

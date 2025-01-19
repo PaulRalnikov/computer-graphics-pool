@@ -56,12 +56,6 @@ vec4 get_plane_equation(vec3 point, vec3 normal) {
     return vec4(normal, -dot(normal, point));
 }
 
-vec3 get_ray_coef(vec3 point_start, vec3 point_end){
-    return normalize(point_end - point_start);
-}
-
-layout (location = 0) out vec4 out_color;
-
 float min(float x, float y) {
     if (x < y) return x;
     return y;
@@ -113,6 +107,8 @@ vec3 add_color_from_rectangle(
     }
     return in_color;
 }
+
+layout (location = 0) out vec4 out_color;
 
 void main()
 {   
