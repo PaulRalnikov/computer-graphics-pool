@@ -1,6 +1,6 @@
 #pragma once
 #include "programs/shader_program.h"
-#include "programs/pool_coordinates/pool_coordinates.h"
+#include "programs/external_structs/pool_coordinates/pool_coordinates.h"
 #include <libs/glm/vec3.hpp>
 #include <libs/glm/mat4x4.hpp>
 
