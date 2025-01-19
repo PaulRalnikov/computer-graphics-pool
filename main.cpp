@@ -228,7 +228,7 @@ int main() try
         glm::mat4 projection = glm::perspective(glm::pi<float>() / 2.f, (window_size.width * 1.f) / window_size.height, near, far);
         glm::mat4 view = camera.get_view();
         glm::mat4 view_inverse = glm::inverse(projection * view);
-        glm::vec3 sun_direction = glm::normalize(glm::vec3(0.5, 1, 0.5));
+        glm::vec3 sun_direction = glm::normalize(glm::vec3(sin(time), 1, cos(time)));
         glm::vec3 camera_position = camera.get_position();
 
         GLuint backgound_texture_source = settings.get_backgound_texture();

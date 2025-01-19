@@ -123,7 +123,6 @@ layout (location = 0) out vec4 out_color;
 void main()
 {   
     vec3 normal = normalize(vec3(-dfdx(), 1.0, -dfdy()));
-    // vec3 normal = normalize(vec3(0, 1.0, 0));
 
     float cos_theta = dot(normalize(camera_position - position), normal);
 
