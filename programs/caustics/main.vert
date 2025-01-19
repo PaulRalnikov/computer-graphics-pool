@@ -72,12 +72,6 @@ void main()
         get_projection_length(x_side_vector, corner_p_ray),
         get_projection_length(y_side_vector, corner_p_ray)
     );
-    // vec3 corner_p_ray = p - corner;
-    // corner_p_ray.y = 0;
-    // vec2 texcoords = vec2(
-    //     get_projection_length(x_side_vector, corner_p_ray),
-    //     get_projection_length(y_side_vector, corner_p_ray)
-    // );
 
     gl_Position = vec4(texcoords, 1.0, 1.0);
 }

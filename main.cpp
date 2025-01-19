@@ -194,8 +194,6 @@ int main() try
         caustics_textures[i] = gen_texture(CAUSTICS_TEXTURE_RESOLUTION);
     }
 
-    GLuint bottom_caustics_texture_source = caustics_textures[0];
-
     CausticsProgram caustics_program(
         caustics_dir + "/main.vert",
         caustics_dir + "/main.frag",
@@ -207,7 +205,8 @@ int main() try
         pool_dir + "/main.vert",
         pool_dir + "/main.frag",
         pool_coordinates,
-        bricks_texture_source
+        bricks_texture_source,
+        caustics_textures
     );
     WaterProgram water_program(
         water_dir + "/main.vert",
@@ -229,7 +228,7 @@ int main() try
         glm::mat4 projection = glm::perspective(glm::pi<float>() / 2.f, (window_size.width * 1.f) / window_size.height, near, far);
         glm::mat4 view = camera.get_view();
         glm::mat4 view_inverse = glm::inverse(projection * view);
-        glm::vec3 sun_direction = glm::normalize(glm::vec3(0.2, 1, 1));
+        glm::vec3 sun_direction = glm::normalize(glm::vec3(1, 1, 1));
         glm::vec3 camera_position = camera.get_position();
 
         GLuint backgound_texture_source = settings.get_backgound_texture();
@@ -263,7 +262,6 @@ int main() try
         pool_program.set_view(view);
         pool_program.set_sun_direction(sun_direction);
         pool_program.set_wall_texture(pool_wall_texture_source);
-        pool_program.set_caustics_texture(bottom_caustics_texture_source);
         pool_program.run();
 
         water_surface.fetch_time(time);

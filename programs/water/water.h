@@ -23,8 +23,6 @@ public:
     void run() override;
 
 private:
-    inline static const int NUM_SIDES = 5;
-
     WaterSurface &surface;
     GLuint model_location;
     GLuint view_location;
@@ -33,7 +31,7 @@ private:
     GLuint sun_direction_location;
     GLuint time_location;
 
-    Texture caustic_texture[NUM_SIDES];
+    Texture caustic_texture[PoolCoordinates::NUM_SIDES];
     
     Texture bottom_texture;
     Texture wall_texture;

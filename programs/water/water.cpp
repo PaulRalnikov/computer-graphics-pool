@@ -22,7 +22,7 @@ WaterProgram::WaterProgram(std::string vertex_shader_path, std::string fragment_
     GLuint x_side_vector_location = glGetUniformLocation(id, "x_side_vector");
     GLuint y_side_vector_location = glGetUniformLocation(id, "y_side_vector");
 
-    std::array<const GLchar*, NUM_SIDES> caustic_texture_names = {
+    std::array<const GLchar*, PoolCoordinates::NUM_SIDES> caustic_texture_names = {
         "bottom_caustics_texture",
         "front_caustics_texture",
         "right_caustics_texture",
@@ -30,7 +30,7 @@ WaterProgram::WaterProgram(std::string vertex_shader_path, std::string fragment_
         "left_caustics_texture"
     };
 
-    for (int i = 0; i < NUM_SIDES; i++) {
+    for (int i = 0; i < PoolCoordinates::NUM_SIDES; i++) {
         caustic_texture[i] = Texture(this, caustic_texture_names[i], GL_TEXTURE_2D, i + 3);
     }
     

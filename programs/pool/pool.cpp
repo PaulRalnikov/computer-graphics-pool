@@ -1,6 +1,7 @@
 #include "pool.h"
 #include <libs/glm/vec2.hpp>
 #include <vector>
+#include <array>
 #include <iostream>
 
 struct PoolVertex{
@@ -23,25 +24,26 @@ std::vector<PoolVertex> to_vector(Rectangle rec) {
 }
 
 PoolProgram::PoolProgram(std::string vertex_shader_path, std::string fragment_shader_path,
-                          PoolCoordinates coordinates, GLuint bottom_texture_source):
+                         PoolCoordinates coordinates,
+                         GLuint bottom_texture_source,
+                         std::vector<GLuint> caustic_texture_sources
+):
     ShaderProgram(vertex_shader_path, fragment_shader_path),
     coordinates(coordinates),
     bottom_texture_source(bottom_texture_source),
     albedo_texture(this, "albedo_texture", GL_TEXTURE_2D, 0),
-    caustics_texture(this, "caustics_texture", GL_TEXTURE_2D, 1)
+    caustics_texture(this, "caustics_texture", GL_TEXTURE_2D, 1),
+    caustic_texture_sources(caustic_texture_sources)
 {
     model_location = glGetUniformLocation(id, "model");
     view_location = glGetUniformLocation(id, "view");
     projection_location = glGetUniformLocation(id, "projection");
     sun_direction_location = glGetUniformLocation(id, "sun_direction");
 
-    std::vector<Rectangle> rectangles = {
-        coordinates.get_bottom(),
-        coordinates.get_right(),
-        coordinates.get_back(),
-        coordinates.get_left(),
-        coordinates.get_front(),
-    };
+    std::vector<Rectangle> rectangles;
+    for (size_t i = 0; i < PoolCoordinates::NUM_SIDES; i++) {
+        rectangles.push_back(coordinates.get_side(i));
+    }
 
     std::vector<PoolVertex> vertexes;
     std::vector<uint32_t> indices;
@@ -56,12 +58,6 @@ PoolProgram::PoolProgram(std::string vertex_shader_path, std::string fragment_sh
         indices.push_back(i * 4 + 3);
         indices.push_back(i * 4 + 0);
     }
-
-    bottom_vertex_segment_start = 0;
-    bottom_vertex_segment_length = 6;
-
-    wall_vertex_segment_start = 6;
-    wall_vertex_segment_length = 24;
 
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
@@ -108,10 +104,6 @@ void PoolProgram::set_wall_texture(GLuint new_wall_texture_source) {
     wall_texture_source = new_wall_texture_source;
 }
 
-void PoolProgram::set_caustics_texture(GLuint caustics_texture_source) {
-    caustics_texture.bind(caustics_texture_source);
-}
-
 void PoolProgram::run()
 {
     glUseProgram(id);
@@ -119,8 +111,12 @@ void PoolProgram::run()
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 
-    albedo_texture.bind(bottom_texture_source);
-    glDrawElements(GL_TRIANGLES, bottom_vertex_segment_length, GL_UNSIGNED_INT, (void *)(bottom_vertex_segment_start * sizeof(int)));
-    albedo_texture.bind(wall_texture_source);
-    glDrawElements(GL_TRIANGLES, wall_vertex_segment_length, GL_UNSIGNED_INT, (void *)(wall_vertex_segment_start * sizeof(int)));
+    for (size_t i = 0; i < caustic_texture_sources.size(); i++) {
+        caustics_texture.bind(caustic_texture_sources[i]);
+        if (i == 0)
+            albedo_texture.bind(bottom_texture_source);
+        else
+            albedo_texture.bind(wall_texture_source);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void *)(i * 6 * sizeof(int)));
+    }
 }

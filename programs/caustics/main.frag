@@ -1,7 +1,5 @@
 #version 330 core
 
-const vec3 sun_color = vec3(1.0, 1.0, 1.0);
-
 uniform vec3 x_side_vector;
 uniform vec3 y_side_vector;
 
