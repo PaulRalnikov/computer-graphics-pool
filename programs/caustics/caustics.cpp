@@ -19,7 +19,6 @@ CausticsProgram::CausticsProgram(
     sun_direction_location = glGetUniformLocation(id, "sun_direction");
     time_location = glGetUniformLocation(id, "time");
     
-    
     glGenTextures(1, &caustics_texture_source);
     glBindTexture(GL_TEXTURE_2D, caustics_texture_source);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
