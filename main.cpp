@@ -127,7 +127,6 @@ int main() try
         sdl2_fail("SDL_CreateWindow: ");
 
     WindowSize window_size(window);
-    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
     SDL_GLContext gl_context = SDL_GL_CreateContext(window);
     if (!gl_context)
@@ -149,6 +148,7 @@ int main() try
 
     GLuint school_texture_source = load_texture(textures_dir + "/school.jpg");
     GLuint billy_texture_source = load_texture(textures_dir + "/billy.jpg");
+    GLuint van_texture_source = load_texture(textures_dir + "/van.jpg");
     GLuint forest_texture_source = load_texture(textures_dir + "/forest.jpg");
     GLuint bricks_texture_source = load_texture(textures_dir + "/bricks_diff.png");
 
@@ -158,7 +158,7 @@ int main() try
                              forest_texture_source,
                              billy_texture_source}),
         std::vector<GLuint>({bricks_texture_source,
-                             billy_texture_source})
+                             van_texture_source})
     );
     EventHandler handler(window_size, settings, camera);
 
@@ -189,37 +189,34 @@ int main() try
         
         if (!settings.get_time_paused()) time += dt;
 
-        glm::mat4 view = camera.get_view();
-        glm::vec3 camera_position = camera.get_position();
-
         float near = 0.1f;
         float far = 100.f;
 
         glm::mat4 model(1.f);
         glm::mat4 projection = glm::perspective(glm::pi<float>() / 2.f, (window_size.width * 1.f) / window_size.height, near, far);
+        glm::mat4 view = camera.get_view();
         glm::mat4 view_inverse = glm::inverse(projection * view);
         glm::vec3 sun_direction = glm::normalize(glm::vec3(0.2, 1, 1));
+        glm::vec3 camera_position = camera.get_position();
 
         GLuint backgound_texture_source = settings.get_backgound_texture();
         GLuint pool_wall_texture_source = settings.get_pool_wall_texture();
 
+        glEnable(GL_CULL_FACE);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glDisable(GL_DEPTH_TEST);
         environment_map_program.set_camera_position(camera_position);
         environment_map_program.set_view_inverse(view_inverse);
         environment_map_program.set_environment_texture(backgound_texture_source);
-
-        glEnable(GL_CULL_FACE);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        
-        glDisable(GL_DEPTH_TEST);
         environment_map_program.run();
 
+        glEnable(GL_DEPTH_TEST);
         pool_program.set_model(model);
         pool_program.set_projection(projection);
         pool_program.set_view(view);
         pool_program.set_sun_direction(sun_direction);
         pool_program.set_wall_texture(pool_wall_texture_source);
-
-        glEnable(GL_DEPTH_TEST);
         pool_program.run();
 
         water_program.set_model(model);

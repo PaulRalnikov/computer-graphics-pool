@@ -21,10 +21,6 @@ glm::vec3 Rectangle::operator[](size_t i) {
 PoolCoordinates::PoolCoordinates(float width, float length, float height, glm::vec3 bottom_corner) :
     width(width), length(length), height(height), bottom_corner(bottom_corner) {}
 
-Rectangle PoolCoordinates::get_bottom() const{
-    return Rectangle(bottom_corner, glm::vec3(0.0, 0.0, width), glm::vec3(length, 0.0, 0.0));
-}
-
 glm::vec3 PoolCoordinates::x() const {
     return glm::vec3(length, 0.0, 0.0);
 }
@@ -37,22 +33,26 @@ glm::vec3 PoolCoordinates::z() const {
     return glm::vec3(0.0, 0.0, width);
 }
 
+Rectangle PoolCoordinates::get_bottom() const{
+    return Rectangle(bottom_corner, z(), x());
+}
+
 Rectangle PoolCoordinates::get_front() const
 {
-    return Rectangle(bottom_corner + x() + y(), -x(), -y());
+    return Rectangle(bottom_corner, x(), y());
 }
 
 Rectangle PoolCoordinates::get_right() const
 {
-    return Rectangle(bottom_corner + x() + y() + z(), -z(), -y());
+    return Rectangle(bottom_corner + x(), z(), y());
 }
 
 Rectangle PoolCoordinates::get_back() const
 {
-    return Rectangle(bottom_corner + y() + z(), x(), -y());
+    return Rectangle(bottom_corner + x() + z(), -x(), y());
 }
 
 Rectangle PoolCoordinates::get_left() const
 {
-    return Rectangle(bottom_corner + y(), z(), -y());
+    return Rectangle(bottom_corner + z(), -z(), y());
 }

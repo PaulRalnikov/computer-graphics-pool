@@ -14,13 +14,12 @@ struct PoolVertex{
 
 std::vector<PoolVertex> to_vector(Rectangle rec) {
     glm::vec3 normal = rec.normal();
-    std::vector<PoolVertex> result = {
+    return std::vector<PoolVertex> ({
         PoolVertex(rec[0], normal, glm::vec2(0.0, 0.0)),
         PoolVertex(rec[1], normal, glm::vec2(1.0, 0.0)),
         PoolVertex(rec[2], normal, glm::vec2(1.0, 1.0)),
         PoolVertex(rec[3], normal, glm::vec2(0.0, 1.0)),
-    };
-    return result;
+    });
 }
 
 PoolProgram::PoolProgram(std::string vertex_shader_path, std::string fragment_shader_path,

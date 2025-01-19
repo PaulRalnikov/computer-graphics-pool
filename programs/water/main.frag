@@ -100,7 +100,7 @@ vec3 add_color_from_rectangle(
     vec3 angle_p_ray = p - rectangle_angle;
     vec2 texcoords = vec2(
         get_projection_length(rectangle_x_side, angle_p_ray),
-        get_projection_length(rectangle_y_side, angle_p_ray)
+        1 - get_projection_length(rectangle_y_side, angle_p_ray)
     );
 
     if (t >= 0 && max(texcoords.x, texcoords.y) <= 1.0 && min(texcoords.x, texcoords.y) >= 0) {
