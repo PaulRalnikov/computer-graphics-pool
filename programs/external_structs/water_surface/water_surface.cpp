@@ -4,7 +4,7 @@
 #include <libs/glm/vec2.hpp>
 #include <libs/glm/vec3.hpp>
 
-WaterSurface::WaterSurface(PoolCoordinates coordinates, size_t quality):
+WaterSurface::WaterSurface(const PoolCoordinates& coordinates, size_t quality):
     coordinates(coordinates), quality(quality)
 {
     glGenVertexArrays(1, &vao);

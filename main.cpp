@@ -188,6 +188,7 @@ int main() try
     CausticsProgram CausticsProgram(
         caustics_dir + "/main.vert",
         caustics_dir + "/main.frag",
+        water_surface,
         256
     );
 
@@ -229,7 +230,7 @@ int main() try
         pool_program.run();
 
         water_surface.fetch_time(time);
-        
+
         water_program.set_model(model);
         water_program.set_projection(projection);
         water_program.set_view(view);

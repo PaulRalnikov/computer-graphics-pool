@@ -4,7 +4,7 @@
 
 class WaterSurface {
 public:
-    WaterSurface(PoolCoordinates coordinates, size_t quality);
+    WaterSurface(const PoolCoordinates& coordinates, size_t quality);
 
     void fetch_time(float time);
     void bind_buffers() const;
@@ -12,7 +12,7 @@ public:
     const PoolCoordinates& get_pool_coordinates() const;
     
 private:
-    PoolCoordinates coordinates;
+    const PoolCoordinates& coordinates;
     size_t quality;
 
     GLuint vao;

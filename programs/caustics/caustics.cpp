@@ -4,9 +4,11 @@
 CausticsProgram::CausticsProgram(
     std::string vertex_shader_path,
     std::string fragment_shader_path,
+    const WaterSurface& surface,
     unsigned int caustics_texture_resolution
 ):
     ShaderProgram(vertex_shader_path, fragment_shader_path),
+    surface(surface),
     caustics_texture_resolution(caustics_texture_resolution)
 {
     model_location = glGetUniformLocation(id, "model");
