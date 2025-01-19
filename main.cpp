@@ -152,6 +152,16 @@ int main() try
     GLuint forest_texture_source = load_texture(textures_dir + "/forest.jpg");
     GLuint bricks_texture_source = load_texture(textures_dir + "/bricks_diff.png");
 
+    Camera camera(glm::vec3(0.0), -0.2, 1.5);
+    WindowSettings settings(
+        std::vector<GLuint>({school_texture_source,
+                             forest_texture_source,
+                             billy_texture_source}),
+        std::vector<GLuint>({bricks_texture_source,
+                             billy_texture_source})
+    );
+    EventHandler handler(window_size, settings, camera);
+
     // programs
     EnvironmentMapProgram environment_map_program(
         environmenmt_map_dir + "/main.vert",
@@ -163,28 +173,14 @@ int main() try
         pool_dir + "/main.vert",
         pool_dir + "/main.frag",
         pool_coordinates,
-        bricks_texture_source,
-        bricks_texture_source);
+        bricks_texture_source
+    );
 
     WaterProgram water_program(
         water_dir + "/main.vert",
         water_dir + "/main.frag",
         pool_coordinates
     );
-
-    Camera camera(glm::vec3(0.0), -0.2, 1.5);
-    WindowSettings settings(
-        std::vector<GLuint>({
-            school_texture_source,
-            forest_texture_source,
-            billy_texture_source
-        }),
-        std::vector<GLuint>({
-            bricks_texture_source,
-            billy_texture_source
-        })
-    );
-    EventHandler handler(window_size, settings, camera);
 
     while (settings.get_running())
     {
@@ -205,6 +201,7 @@ int main() try
         glm::vec3 sun_direction = glm::normalize(glm::vec3(0.2, 1, 1));
 
         GLuint backgound_texture_source = settings.get_backgound_texture();
+        GLuint pool_wall_texture_source = settings.get_pool_wall_texture();
 
         environment_map_program.set_camera_position(camera_position);
         environment_map_program.set_view_inverse(view_inverse);
@@ -220,6 +217,7 @@ int main() try
         pool_program.set_projection(projection);
         pool_program.set_view(view);
         pool_program.set_sun_direction(sun_direction);
+        pool_program.set_wall_texture(pool_wall_texture_source);
 
         glEnable(GL_DEPTH_TEST);
         pool_program.run();
@@ -228,7 +226,7 @@ int main() try
         water_program.set_projection(projection);
         water_program.set_view(view);
         water_program.set_bottom_texture(bricks_texture_source);
-        water_program.set_wall_texture(settings.get_pool_wall_texture());
+        water_program.set_wall_texture(pool_wall_texture_source);
         water_program.set_environment_texture(backgound_texture_source);
         water_program.set_camera_position(camera_position);
         water_program.set_sun_direction(sun_direction);

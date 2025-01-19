@@ -15,20 +15,19 @@ struct PoolVertex{
 std::vector<PoolVertex> to_vector(Rectangle rec) {
     glm::vec3 normal = rec.normal();
     std::vector<PoolVertex> result = {
-        PoolVertex(rec[0], normal, glm::vec2(0.0, 1.0)),
-        PoolVertex(rec[1], normal, glm::vec2(1.0, 1.0)),
-        PoolVertex(rec[2], normal, glm::vec2(1.0, 0.0)),
-        PoolVertex(rec[3], normal, glm::vec2(0.0, 0.0)),
+        PoolVertex(rec[0], normal, glm::vec2(0.0, 0.0)),
+        PoolVertex(rec[1], normal, glm::vec2(1.0, 0.0)),
+        PoolVertex(rec[2], normal, glm::vec2(1.0, 1.0)),
+        PoolVertex(rec[3], normal, glm::vec2(0.0, 1.0)),
     };
     return result;
 }
 
 PoolProgram::PoolProgram(std::string vertex_shader_path, std::string fragment_shader_path,
-                          PoolCoordinates coordinates, GLuint bottom_texture, GLuint wall_texture):
+                          PoolCoordinates coordinates, GLuint bottom_texture_source):
     ShaderProgram(vertex_shader_path, fragment_shader_path),
     coordinates(coordinates),
-    bottom_texture(bottom_texture),
-    wall_texture(wall_texture),
+    bottom_texture_source(bottom_texture_source),
     texture(this, "albedo_texture", GL_TEXTURE_2D, 0)
 {
 
@@ -105,14 +104,19 @@ void PoolProgram::set_sun_direction(glm::vec3 sun_direction) {
     glUniform3fv(sun_direction_location, 1, reinterpret_cast<float *>(&sun_direction));
 }
 
-void PoolProgram::run() {
+void PoolProgram::set_wall_texture(GLuint new_wall_texture_source) {
+    wall_texture_source = new_wall_texture_source;
+}
+
+    void PoolProgram::run()
+{
     glUseProgram(id);
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 
-    texture.bind(bottom_texture);
+    texture.bind(bottom_texture_source);
     glDrawElements(GL_TRIANGLES, bottom_vertex_segment_length, GL_UNSIGNED_INT, (void *)(bottom_vertex_segment_start * sizeof(int)));
-    texture.bind(wall_texture);
+    texture.bind(wall_texture_source);
     glDrawElements(GL_TRIANGLES, wall_vertex_segment_length, GL_UNSIGNED_INT, (void *)(wall_vertex_segment_start * sizeof(int)));
 }

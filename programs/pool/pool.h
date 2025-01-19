@@ -7,13 +7,13 @@
 class PoolProgram : public ShaderProgram {
 public:
     PoolProgram(std::string vertex_shader_path, std::string fragment_shader_path,
-                PoolCoordinates coordinates, GLuint bottom_texture, GLuint wall_texture); 
+                PoolCoordinates coordinates, GLuint bottom_texture_source); 
 
     void set_model(glm::mat4 model);
     void set_view(glm::mat4 model);
     void set_projection(glm::mat4 model);
     void set_sun_direction(glm::vec3 sun_direction);
-    void set_wall_texture(GLuint new_wall_texture);
+    void set_wall_texture(GLuint new_wall_texture_source);
 
     void run() override;
 private:
@@ -21,8 +21,8 @@ private:
     GLuint ebo;
     Texture texture;
 
-    GLuint bottom_texture;
-    GLuint wall_texture;
+    GLuint bottom_texture_source;
+    GLuint wall_texture_source;
 
     PoolCoordinates coordinates;
 
