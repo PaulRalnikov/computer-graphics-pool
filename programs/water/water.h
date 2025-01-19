@@ -25,6 +25,7 @@ private:
     PoolCoordinates coordinates;
     size_t quality;
 
+    GLuint vao;
     GLuint vbo;
     GLuint ebo;
 

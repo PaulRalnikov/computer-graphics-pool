@@ -17,6 +17,7 @@ public:
 
     void run() override;
 private:
+    GLuint vao;
     GLuint vbo;
     GLuint ebo;
     Texture texture;

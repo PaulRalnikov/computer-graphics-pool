@@ -3,14 +3,6 @@
 #include <iostream>
 #include <libs/glm/gtx/string_cast.hpp>
 
-struct WaterVertex{
-    glm::vec3 position;
-    glm::vec3 normal;
-
-    WaterVertex(glm::vec3 position = glm::vec3(0.0), glm::vec3 normal = glm::vec3(0.0)) :
-        position(position), normal(normal){}
-};
-
 WaterProgram::WaterProgram(std::string vertex_shader_path, std::string fragment_shader_path,
                            PoolCoordinates coordinates, size_t quality):
     ShaderProgram(vertex_shader_path, fragment_shader_path),
@@ -68,6 +60,7 @@ WaterProgram::WaterProgram(std::string vertex_shader_path, std::string fragment_
     glUniform3fv(left_x_side_location, 1, reinterpret_cast<float *>(&left.x_side));
     glUniform3fv(left_y_side_location, 1, reinterpret_cast<float *>(&left.y_side));
 
+    glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
 
     glGenBuffers(1, &vbo);
@@ -77,9 +70,7 @@ WaterProgram::WaterProgram(std::string vertex_shader_path, std::string fragment_
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(WaterVertex), (void *)offsetof(WaterVertex, position));
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(WaterVertex), (void *)offsetof(WaterVertex, normal));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void *)(0));
 }
 
 void WaterProgram::set_model(glm::mat4 model)
@@ -142,13 +133,12 @@ void WaterProgram::fetch_time(float time) {
     glUseProgram(id);
     glUniform1f(time_location, time);
     glm::vec3 left_vertex = coordinates.bottom_corner + glm::vec3(0.0, coordinates.height, 0.0);
-    std::vector<WaterVertex> vertexes;
+    std::vector<glm::vec3> vertexes;
     for (int i = 0; i < quality; i++) {
         for (int j = 0; j < quality; j++) {
             glm::vec2 water_coords(coordinates.length * i / (quality - 1), coordinates.width * j / (quality - 1));
             glm::vec3 position = left_vertex + glm::vec3(water_coords.x, f(water_coords, time), water_coords.y);
-            glm::vec3 normal = glm::normalize(glm::vec3(-dfdx(water_coords, time), 1.0, -dfdy(water_coords, time)));
-            vertexes.push_back(WaterVertex(position, normal));
+            vertexes.push_back(position);
         }
     }
 

@@ -25,6 +25,5 @@ void EnvironmentMapProgram::set_environment_texture(GLuint environment_texture_s
 
 void EnvironmentMapProgram::run() {
     glUseProgram(id);
-    glBindVertexArray(vao);
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 }

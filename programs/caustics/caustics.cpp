@@ -33,4 +33,8 @@ CausticsProgram::CausticsProgram(
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 }
 
-void CausticsProgram::run() {}
+void CausticsProgram::run() {
+    glDisable(GL_CULL_FACE);
+    glUseProgram(id);
+    
+}

@@ -35,8 +35,6 @@ PoolProgram::PoolProgram(std::string vertex_shader_path, std::string fragment_sh
     projection_location = glGetUniformLocation(id, "projection");
     sun_direction_location = glGetUniformLocation(id, "sun_direction");
 
-    glBindVertexArray(vao);
-
     std::vector<Rectangle> rectangles = {
         coordinates.get_bottom(),
         coordinates.get_right(),
@@ -65,6 +63,9 @@ PoolProgram::PoolProgram(std::string vertex_shader_path, std::string fragment_sh
     wall_vertex_segment_start = 6;
     wall_vertex_segment_length = 24;
 
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+    
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(GL_ARRAY_BUFFER, vertexes.size() * sizeof(vertexes[0]), vertexes.data(), GL_STATIC_DRAW);

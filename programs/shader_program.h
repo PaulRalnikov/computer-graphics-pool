@@ -22,5 +22,4 @@ public:
     virtual void run() = 0;
 protected:
     GLuint id;
-    GLuint vao;
 };

@@ -54,8 +54,6 @@ ShaderProgram::ShaderProgram(std::string vertex_shader_path, std::string fragmen
         glGetProgramInfoLog(id, info_log.size(), nullptr, info_log.data());
         throw std::runtime_error("Program linkage failed: " + info_log);
     }
-
-    glGenVertexArrays(1, &vao);
 }
 
 ShaderProgram::Texture::Texture(
