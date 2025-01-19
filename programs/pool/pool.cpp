@@ -54,11 +54,11 @@ PoolProgram::PoolProgram(std::string vertex_shader_path, std::string fragment_sh
         for (auto el : to_vector(rectangles[i]))
             vertexes.push_back(el);
         indices.push_back(i * 4 + 0);
-        indices.push_back(i * 4 + 2);
         indices.push_back(i * 4 + 1);
         indices.push_back(i * 4 + 2);
-        indices.push_back(i * 4 + 0);
+        indices.push_back(i * 4 + 2);
         indices.push_back(i * 4 + 3);
+        indices.push_back(i * 4 + 0);
     }
 
     bottom_vertex_segment_start = 0;

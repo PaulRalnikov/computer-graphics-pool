@@ -92,7 +92,7 @@ vec3 add_color_from_rectangle(
     vec3 ray_coef,
     float mix_coef)
 {
-    vec3 rectangle_normal = -normalize(cross(rectangle_x_side, rectangle_y_side));
+    vec3 rectangle_normal = normalize(cross(rectangle_x_side, rectangle_y_side));
     vec4 rectangle_plane = get_plane_equation(rectangle_angle, rectangle_normal);
     float t = intersect_line_with_plane(ray_point, ray_coef, rectangle_plane);
     vec3 p = ray_point + t * ray_coef;

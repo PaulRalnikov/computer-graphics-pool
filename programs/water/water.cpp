@@ -36,9 +36,10 @@ WaterProgram::WaterProgram(std::string vertex_shader_path, std::string fragment_
     GLuint front_y_side_location = glGetUniformLocation(id, "front_y_side");
 
     glUseProgram(id);
-    glUniform3fv(bottom_angle_location, 1, reinterpret_cast<float *>(&coordinates.bottom_corner));
-    glUniform3f(bottom_x_side_location, coordinates.length, 0.0, 0.0);
-    glUniform3f(bottom_y_side_location, 0.0, 0.0, coordinates.width);
+    Rectangle bottom = coordinates.get_bottom();
+    glUniform3fv(bottom_angle_location, 1, reinterpret_cast<float *>(&bottom.corner));
+    glUniform3fv(bottom_x_side_location, 1, reinterpret_cast<float *>(&bottom.x_side));
+    glUniform3fv(bottom_y_side_location, 1, reinterpret_cast<float *>(&bottom.y_side));
 
     glUniform3fv(front_angle_location, 1, reinterpret_cast<float *>(&coordinates.bottom_corner));
     glUniform3f(front_x_side_location, coordinates.length, 0.0, 0.0);
