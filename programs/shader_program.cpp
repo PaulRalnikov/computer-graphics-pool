@@ -56,6 +56,9 @@ ShaderProgram::ShaderProgram(std::string vertex_shader_path, std::string fragmen
     }
 }
 
+ShaderProgram::Texture::Texture():
+    texture_location(0), target(0), texture_num(-1) {};
+
 ShaderProgram::Texture::Texture(
     const ShaderProgram* program,
     const GLchar* name,

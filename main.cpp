@@ -107,6 +107,18 @@ GLuint load_texture(std::string const &path)
     return result;
 }
 
+GLuint gen_texture(unsigned int resolution) {
+    GLuint result;
+    glGenTextures(1, &result);
+    glBindTexture(GL_TEXTURE_2D, result);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RG32F, resolution, resolution, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    return result;
+}
+
 int main() try
 {
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
@@ -174,12 +186,22 @@ int main() try
         environmenmt_map_dir + "/main.vert",
         environmenmt_map_dir + "/main.frag"
     );
+
+    const unsigned int CAUSTICS_TEXTURE_RESOLUTION = 512;
+
+    GLuint bottom_texture = gen_texture(512);
+
     CausticsProgram caustics_program(
         caustics_dir + "/main.vert",
         caustics_dir + "/main.frag",
         water_surface,
         512
     );
+
+    caustics_program.set_caustics_texture_source(bottom_texture);
+
+    GLuint bottom_caustics_texture_source = caustics_program.get_caustics_texture_source();
+
     PoolProgram pool_program(
         pool_dir + "/main.vert",
         pool_dir + "/main.frag",
@@ -237,7 +259,7 @@ int main() try
         pool_program.set_view(view);
         pool_program.set_sun_direction(sun_direction);
         pool_program.set_wall_texture(pool_wall_texture_source);
-        pool_program.set_caustics_texture(caustics_program.get_caustics_texture_source());
+        pool_program.set_caustics_texture(bottom_caustics_texture_source);
         pool_program.run();
 
         water_surface.fetch_time(time);
@@ -246,6 +268,7 @@ int main() try
         water_program.set_projection(projection);
         water_program.set_view(view);
         water_program.set_bottom_texture(bricks_texture_source);
+        water_program.set_caustics_texture(0, bottom_caustics_texture_source);
         water_program.set_wall_texture(pool_wall_texture_source);
         water_program.set_environment_texture(backgound_texture_source);
         water_program.set_camera_position(camera_position);

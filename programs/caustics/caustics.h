@@ -20,6 +20,7 @@ public:
     void set_sun_direction(glm::vec3 sun_direction);
     void set_time(float time);
     GLuint get_caustics_texture_source() const;
+    void set_caustics_texture_source(GLuint new_caustics_texture_source);
 
     void run() override;
 private:

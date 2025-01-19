@@ -19,20 +19,7 @@ CausticsProgram::CausticsProgram(
     sun_direction_location = glGetUniformLocation(id, "sun_direction");
     time_location = glGetUniformLocation(id, "time");
     
-    glGenTextures(1, &caustics_texture_source);
-    glBindTexture(GL_TEXTURE_2D, caustics_texture_source);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RG32F, caustics_texture_resolution, caustics_texture_resolution, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-
     glGenFramebuffers(1, &fbo);
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
-    glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, caustics_texture_source, 0);
-    if (glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        throw std::runtime_error("Incomplete framebuffer!");
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 }
 
 void CausticsProgram::set_model(glm::mat4 model) {
@@ -65,6 +52,15 @@ void CausticsProgram::set_time(float time) {
 
 GLuint CausticsProgram::get_caustics_texture_source() const {
     return caustics_texture_source;
+}
+
+void CausticsProgram::set_caustics_texture_source(GLuint new_caustics_texture_source) {
+    caustics_texture_source = new_caustics_texture_source;
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
+    glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, new_caustics_texture_source, 0);
+    if (glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        throw std::runtime_error("Incomplete framebuffer!");
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 }
 
 void CausticsProgram::run() {

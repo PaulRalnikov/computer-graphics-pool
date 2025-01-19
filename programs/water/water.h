@@ -15,6 +15,7 @@ public:
     void set_camera_position(glm::vec3 camera_position);
     void set_sun_direction(glm::vec3 sun_direction);
     void set_bottom_texture(GLuint bottom_texture_source);
+    void set_caustics_texture(size_t side_index, GLuint caustic_texture_source);
     void set_wall_texture(GLuint wall_texture_source);
     void set_environment_texture(GLuint environment_texture_source);
     void set_time(float time);
@@ -22,13 +23,17 @@ public:
     void run() override;
 
 private:
-    WaterSurface& surface;
+    inline static const int NUM_SIDES = 5;
+
+    WaterSurface &surface;
     GLuint model_location;
     GLuint view_location;
     GLuint projection_location;
     GLuint camera_position_location;
     GLuint sun_direction_location;
     GLuint time_location;
+
+    Texture caustic_texture[NUM_SIDES];
     
     Texture bottom_texture;
     Texture wall_texture;

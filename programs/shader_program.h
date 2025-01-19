@@ -8,6 +8,7 @@ public:
 
     class Texture {
     public:
+        Texture();
         Texture(const ShaderProgram *program, const GLchar* name, GLenum target, unsigned int texture_num);
 
         void bind(GLuint texture_source);

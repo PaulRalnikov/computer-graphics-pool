@@ -10,28 +10,20 @@ uniform vec3 camera_position;
 uniform vec3 sun_direction;
 uniform float time;
 
-uniform vec3 bottom_angle;
-uniform vec3 bottom_x_side;
-uniform vec3 bottom_y_side;
+const int NUM_SIDES = 5;
+
+uniform vec3 corner[NUM_SIDES];
+uniform vec3 x_side_vector[NUM_SIDES];
+uniform vec3 y_side_vector[NUM_SIDES];
 
 uniform sampler2D bottom_texture;
 uniform sampler2D wall_texture;
 
-uniform vec3 front_angle;
-uniform vec3 front_x_side;
-uniform vec3 front_y_side;
-
-uniform vec3 left_angle;
-uniform vec3 left_x_side;
-uniform vec3 left_y_side;
-
-uniform vec3 back_angle;
-uniform vec3 back_x_side;
-uniform vec3 back_y_side;
-
-uniform vec3 right_angle;
-uniform vec3 right_x_side;
-uniform vec3 right_y_side;
+uniform sampler2D bottom_caustics_texture;
+uniform sampler2D front_caustics_texture;
+uniform sampler2D right_caustics_texture;
+uniform sampler2D back_caustics_texture;
+uniform sampler2D left_caustics_texture;
 
 uniform sampler2D environment_texture;
 
@@ -79,28 +71,31 @@ float get_projection_length(vec3 direction, vec3 v) {
 
 vec3 add_color_from_rectangle(
     vec3 in_color,
-    vec3 rectangle_angle,
-    vec3 rectangle_x_side,
-    vec3 rectangle_y_side,
+    int i,
     sampler2D rectangle_texture,
+    sampler2D caustics_texture,
     vec3 ray_point,
     vec3 ray_coef,
     float mix_coef)
 {
-    vec3 rectangle_normal = normalize(cross(rectangle_x_side, rectangle_y_side));
-    vec4 rectangle_plane = get_plane_equation(rectangle_angle, rectangle_normal);
+    
+    vec3 currect_corner = corner[i];
+    vec3 currecnt_x_side_vector = x_side_vector[i];
+    vec3 currect_y_side_vector = y_side_vector[i];
+    vec3 rectangle_normal = normalize(cross(currecnt_x_side_vector, currect_y_side_vector));
+    vec4 rectangle_plane = get_plane_equation(currect_corner, rectangle_normal);
     float t = intersect_line_with_plane(ray_point, ray_coef, rectangle_plane);
     vec3 p = ray_point + t * ray_coef;
-    vec3 angle_p_ray = p - rectangle_angle;
+    vec3 angle_p_ray = p - currect_corner;
     vec2 texcoords = vec2(
-        get_projection_length(rectangle_x_side, angle_p_ray),
-        1 - get_projection_length(rectangle_y_side, angle_p_ray)
+        get_projection_length(currecnt_x_side_vector, angle_p_ray),
+        1 - get_projection_length(currect_y_side_vector, angle_p_ray)
     );
 
     if (t >= 0 && max(texcoords.x, texcoords.y) <= 1.0 && min(texcoords.x, texcoords.y) >= 0) {
         float ambient_light = 0.2;
         vec3 albedo = texture(rectangle_texture, texcoords).rgb;
-        float lightness = ambient_light + max(0.0, dot(rectangle_normal, sun_direction));
+        float lightness = ambient_light + texture(caustics_texture, texcoords).r;
 
         vec3 refracted_color = lightness * albedo;
         return mix(in_color, refracted_color, mix_coef);
@@ -140,11 +135,11 @@ void main()
 
     vec3 ray_coef = normalize(refracted_direction);
     
-    color = add_color_from_rectangle(color, bottom_angle, bottom_x_side, bottom_y_side, bottom_texture, position, ray_coef, refraction_mix_coef);
-    color = add_color_from_rectangle(color, front_angle, front_x_side, front_y_side, wall_texture, position, ray_coef, refraction_mix_coef);
-    color = add_color_from_rectangle(color, right_angle, right_x_side, right_y_side, wall_texture, position, ray_coef, refraction_mix_coef);
-    color = add_color_from_rectangle(color, back_angle, back_x_side, back_y_side, wall_texture, position, ray_coef, refraction_mix_coef);
-    color = add_color_from_rectangle(color, left_angle, left_x_side, left_y_side, wall_texture, position, ray_coef, refraction_mix_coef);
+    color = add_color_from_rectangle(color, 0, bottom_texture, bottom_caustics_texture, position, ray_coef, refraction_mix_coef);
+    color = add_color_from_rectangle(color, 1, wall_texture, bottom_caustics_texture, position, ray_coef, refraction_mix_coef);
+    color = add_color_from_rectangle(color, 2, wall_texture, bottom_caustics_texture, position, ray_coef, refraction_mix_coef);
+    color = add_color_from_rectangle(color, 3, wall_texture, bottom_caustics_texture, position, ray_coef, refraction_mix_coef);
+    color = add_color_from_rectangle(color, 4, wall_texture, bottom_caustics_texture, position, ray_coef, refraction_mix_coef);
 
     color = mix(color, vec3(0.0, 0.1, 1.0), 0.2);
 

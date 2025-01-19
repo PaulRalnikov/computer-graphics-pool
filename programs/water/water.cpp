@@ -1,4 +1,5 @@
 #include "water.h"
+#include <array>
 #include <vector>
 #include <iostream>
 #include <libs/glm/gtx/string_cast.hpp>
@@ -17,47 +18,55 @@ WaterProgram::WaterProgram(std::string vertex_shader_path, std::string fragment_
     sun_direction_location = glGetUniformLocation(id, "sun_direction");
     time_location = glGetUniformLocation(id, "time");
 
-    glUseProgram(id);
-    const PoolCoordinates& coordinates = surface.get_pool_coordinates();
+    GLuint corner_location = glGetUniformLocation(id, "corner");
+    GLuint x_side_vector_location = glGetUniformLocation(id, "x_side_vector");
+    GLuint y_side_vector_location = glGetUniformLocation(id, "y_side_vector");
+
+    std::array<const GLchar*, NUM_SIDES> caustic_texture_names = {
+        "bottom_caustics_texture",
+        "front_caustics_texture",
+        "right_caustics_texture",
+        "back_caustics_texture",
+        "left_caustics_texture"
+    };
+
+    for (int i = 0; i < NUM_SIDES; i++) {
+        caustic_texture[i] = Texture(this, caustic_texture_names[i], GL_TEXTURE_2D, i + 3);
+    }
+    
+    const PoolCoordinates &coordinates = surface.get_pool_coordinates();
     Rectangle bottom = coordinates.get_bottom();
-    GLuint bottom_angle_location = glGetUniformLocation(id, "bottom_angle");
-    GLuint bottom_x_side_location = glGetUniformLocation(id, "bottom_x_side");
-    GLuint bottom_y_side_location = glGetUniformLocation(id, "bottom_y_side");
-    glUniform3fv(bottom_angle_location, 1, reinterpret_cast<float *>(&bottom.corner));
-    glUniform3fv(bottom_x_side_location, 1, reinterpret_cast<float *>(&bottom.x_side));
-    glUniform3fv(bottom_y_side_location, 1, reinterpret_cast<float *>(&bottom.y_side));
-
     Rectangle front = coordinates.get_front();
-    GLuint front_angle_location = glGetUniformLocation(id, "front_angle");
-    GLuint front_x_side_location = glGetUniformLocation(id, "front_x_side");
-    GLuint front_y_side_location = glGetUniformLocation(id, "front_y_side");
-    glUniform3fv(front_angle_location, 1, reinterpret_cast<float *>(&front.corner));
-    glUniform3fv(front_x_side_location, 1, reinterpret_cast<float *>(&front.x_side));
-    glUniform3fv(front_y_side_location, 1, reinterpret_cast<float *>(&front.y_side));
-
     Rectangle right = coordinates.get_right();
-    GLuint right_angle_location = glGetUniformLocation(id, "right_angle");
-    GLuint right_x_side_location = glGetUniformLocation(id, "right_x_side");
-    GLuint right_y_side_location = glGetUniformLocation(id, "right_y_side");
-    glUniform3fv(right_angle_location, 1, reinterpret_cast<float *>(&right.corner));
-    glUniform3fv(right_x_side_location, 1, reinterpret_cast<float *>(&right.x_side));
-    glUniform3fv(right_y_side_location, 1, reinterpret_cast<float *>(&right.y_side));
-
     Rectangle back = coordinates.get_back();
-    GLuint back_angle_location = glGetUniformLocation(id, "back_angle");
-    GLuint back_x_side_location = glGetUniformLocation(id, "back_x_side");
-    GLuint back_y_side_location = glGetUniformLocation(id, "back_y_side");
-    glUniform3fv(back_angle_location, 1, reinterpret_cast<float *>(&back.corner));
-    glUniform3fv(back_x_side_location, 1, reinterpret_cast<float *>(&back.x_side));
-    glUniform3fv(back_y_side_location, 1, reinterpret_cast<float *>(&back.y_side));
-
     Rectangle left = coordinates.get_left();
-    GLuint left_angle_location = glGetUniformLocation(id, "left_angle");
-    GLuint left_x_side_location = glGetUniformLocation(id, "left_x_side");
-    GLuint left_y_side_location = glGetUniformLocation(id, "left_y_side");
-    glUniform3fv(left_angle_location, 1, reinterpret_cast<float *>(&left.corner));
-    glUniform3fv(left_x_side_location, 1, reinterpret_cast<float *>(&left.x_side));
-    glUniform3fv(left_y_side_location, 1, reinterpret_cast<float *>(&left.y_side));
+
+    std::vector<glm::vec3> corners = {
+        bottom.corner,
+        front.corner,
+        right.corner,
+        back.corner,
+        left.corner
+    };
+    glUniform3fv(corner_location, corners.size(), reinterpret_cast<float *>(corners.data()));
+
+    std::vector<glm::vec3> x_side_vectors = {
+        bottom.x_side,
+        front.x_side,
+        right.x_side,
+        back.x_side,
+        left.x_side
+    };
+    glUniform3fv(x_side_vector_location, x_side_vectors.size(), reinterpret_cast<float *>(x_side_vectors.data()));
+
+    std::vector<glm::vec3> y_side_vectors = {
+        bottom.y_side,
+        front.y_side,
+        right.y_side,
+        back.y_side,
+        left.y_side
+    };
+    glUniform3fv(y_side_vector_location, y_side_vectors.size(), reinterpret_cast<float *>(y_side_vectors.data()));
 }
 
 void WaterProgram::set_model(glm::mat4 model)
@@ -93,6 +102,11 @@ void WaterProgram::set_sun_direction(glm::vec3 sun_direction)
 void WaterProgram::set_bottom_texture(GLuint bottom_texture_source)
 {
     bottom_texture.bind(bottom_texture_source);
+}
+
+void WaterProgram::set_caustics_texture(size_t side_index, GLuint caustics_texture_source)
+{
+    caustic_texture[side_index].bind(caustics_texture_source);
 }
 
 void WaterProgram::set_wall_texture(GLuint wall_texture_source)
