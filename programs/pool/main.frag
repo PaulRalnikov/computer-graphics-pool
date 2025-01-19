@@ -1,5 +1,7 @@
 #version 330 core
 
+
+const vec3 sun_color = vec3(1.0, 1.0, 1.0);
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
@@ -32,10 +34,10 @@ void main()
 {
     float ambient_light = 0.2;
     vec3 albedo = texture(albedo_texture, texcoord).rgb;
-    vec3 caustics = texture(caustics_texture, texcoord).rgb;
+    float caustics = texture(caustics_texture, texcoord).r;
     float lightness = ambient_light + max(0.0, dot(normal, sun_direction));
 
-    vec3 color = lightness * caustics;
+    vec3 color = mix(lightness * albedo, sun_color, caustics);
     color = Uncharted2Tonemap(color);
     //gamma correction
     color = pow(color, vec3(1.0 / 2.2));

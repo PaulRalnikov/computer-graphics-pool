@@ -63,7 +63,8 @@ void main()
     float c = -dot(normal, sun_ray_direction);
     refracted_direction = normalize(r * sun_ray_direction + (r * c - sqrt(1 - r * r * (1 - c * c))) * normal);
 
-    vec4 plane = get_plane_equation(corner, normal);
+    vec3 plane_normal = normalize(cross(x_side_vector, y_side_vector));
+    vec4 plane = get_plane_equation(corner, plane_normal);
     float t = intersect_line_with_plane(position, refracted_direction, plane);
     vec3 p = position + t * refracted_direction;
     vec3 corner_p_ray = p - corner;
@@ -71,6 +72,12 @@ void main()
         get_projection_length(x_side_vector, corner_p_ray),
         get_projection_length(y_side_vector, corner_p_ray)
     );
+    // vec3 corner_p_ray = p - corner;
+    // corner_p_ray.y = 0;
+    // vec2 texcoords = vec2(
+    //     get_projection_length(x_side_vector, corner_p_ray),
+    //     get_projection_length(y_side_vector, corner_p_ray)
+    // );
 
     gl_Position = vec4(texcoords, 1.0, 1.0);
 }

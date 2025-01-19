@@ -11,6 +11,7 @@ CausticsProgram::CausticsProgram(
     surface(surface),
     caustics_texture_resolution(caustics_texture_resolution)
 {
+    glUseProgram(id);
     model_location = glGetUniformLocation(id, "model");
     corner_location = glGetUniformLocation(id, "corner");
     x_side_vector_location = glGetUniformLocation(id, "x_side_vector");
@@ -18,14 +19,14 @@ CausticsProgram::CausticsProgram(
     sun_direction_location = glGetUniformLocation(id, "sun_direction");
     time_location = glGetUniformLocation(id, "time");
     
-    // glUseProgram(id);
+    
     glGenTextures(1, &caustics_texture_source);
     glBindTexture(GL_TEXTURE_2D, caustics_texture_source);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    // glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB8, caustics_texture_resolution, caustics_texture_resolution, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RG32F, caustics_texture_resolution, caustics_texture_resolution, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 
     glGenFramebuffers(1, &fbo);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
@@ -37,7 +38,7 @@ CausticsProgram::CausticsProgram(
 
 void CausticsProgram::set_model(glm::mat4 model) {
     glUseProgram(id);
-    
+    glUniformMatrix4fv(model_location, 1, GL_FALSE, reinterpret_cast<float *>(&model));
 }
 void CausticsProgram::set_corner(glm::vec3 corner) {
     glUseProgram(id);
@@ -68,14 +69,24 @@ GLuint CausticsProgram::get_caustics_texture_source() const {
 }
 
 void CausticsProgram::run() {
+    glUseProgram(id);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
+
+    glClearColor(0.0, 0.0, 0.0, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT);
+    GLint old_viewport[4];
+    glGetIntegerv(GL_VIEWPORT, old_viewport);
+    glViewport(0, 0, caustics_texture_resolution, caustics_texture_resolution);
+
+    glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-    glUseProgram(id);
+    
     surface.bind_buffers();
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
-    // glViewport(0, 0, caustics_texture_resolution, caustics_texture_resolution);
+    
     glDrawElements(GL_TRIANGLES, surface.get_indexes_count(), GL_UNSIGNED_INT, (void *)(0));
     glDisable(GL_BLEND);
+    glViewport(old_viewport[0], old_viewport[1], old_viewport[2], old_viewport[3]);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 }

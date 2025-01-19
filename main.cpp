@@ -166,7 +166,7 @@ int main() try
     );
     EventHandler handler(window_size, settings, camera);
 
-    PoolCoordinates pool_coordinates(20.0, 40.0, 30.0, glm::vec3(0.0, -5.0, 0.0));
+    PoolCoordinates pool_coordinates(20.0, 40.0, 20.0, glm::vec3(0.0, -5.0, 0.0));
     WaterSurface water_surface(pool_coordinates, 128);
 
     // programs
@@ -178,7 +178,7 @@ int main() try
         caustics_dir + "/main.vert",
         caustics_dir + "/main.frag",
         water_surface,
-        256
+        512
     );
     PoolProgram pool_program(
         pool_dir + "/main.vert",
