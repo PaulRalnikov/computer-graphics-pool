@@ -14,6 +14,23 @@ uniform vec3 bottom_x_side;
 uniform vec3 bottom_y_side;
 
 uniform sampler2D bottom_texture;
+uniform sampler2D wall_texture;
+
+uniform vec3 front_angle;
+uniform vec3 front_x_side;
+uniform vec3 front_y_side;
+
+uniform vec3 left_angle;
+uniform vec3 left_x_side;
+uniform vec3 left_y_side;
+
+uniform vec3 back_angle;
+uniform vec3 back_x_side;
+uniform vec3 back_y_side;
+
+uniform vec3 right_angle;
+uniform vec3 right_x_side;
+uniform vec3 right_y_side;
 
 uniform sampler2D environment_texture;
 
@@ -65,6 +82,37 @@ float get_projection_length(vec3 direction, vec3 v) {
     return length(v) * dot(normalize(direction), normalize(v)) / length(direction);
 }
 
+vec3 add_color_from_rectangle(
+    vec3 in_color,
+    vec3 rectangle_angle,
+    vec3 rectangle_x_side,
+    vec3 rectangle_y_side,
+    sampler2D rectangle_texture,
+    vec3 ray_point,
+    vec3 ray_coef,
+    float mix_coef)
+{
+    vec3 rectangle_normal = -normalize(cross(rectangle_x_side, rectangle_y_side));
+    vec4 rectangle_plane = get_plane_equation(rectangle_angle, rectangle_normal);
+    float t = intersect_line_with_plane(ray_point, ray_coef, rectangle_plane);
+    vec3 p = ray_point + t * ray_coef;
+    vec3 angle_p_ray = p - rectangle_angle;
+    vec2 texcoords = vec2(
+        get_projection_length(rectangle_x_side, angle_p_ray),
+        get_projection_length(rectangle_y_side, angle_p_ray)
+    );
+
+    if (t >= 0 && max(texcoords.x, texcoords.y) <= 1.0 && min(texcoords.x, texcoords.y) >= 0) {
+        float ambient_light = 0.2;
+        vec3 albedo = texture(rectangle_texture, texcoords).rgb;
+        float lightness = ambient_light + max(0.0, dot(rectangle_normal, sun_direction));
+
+        vec3 refracted_color = lightness * albedo;
+        return mix(in_color, refracted_color, mix_coef);
+    }
+    return in_color;
+}
+
 void main()
 {   
     vec3 normal = normalize(vec3(-dfdx(), 1.0, -dfdy()));
@@ -79,30 +127,9 @@ void main()
     float c = -dot(normal, ray_direction);
     vec3 refracted_direction = r * ray_direction + (r * c - sqrt(1 - r * r * (1 - c * c))) * normal;
 
-    vec3 bottom_normal = -normalize(cross(bottom_x_side, bottom_y_side));
     vec3 ray_coef = normalize(refracted_direction);
-    vec4 bottom_plane = get_plane_equation(bottom_angle, bottom_normal);
-    float t = intersect_line_with_plane(position, ray_coef, bottom_plane);
-    vec3 p = position + t * ray_coef;
-    vec3 bottom_p_ray = p - bottom_angle;
-    vec2 bottom_texcoords = vec2(
-        get_projection_length(bottom_x_side, bottom_p_ray),
-        get_projection_length(bottom_y_side, bottom_p_ray)
-    );
-
-    vec3 refracted_color;
-    if (t >= 0 && max(bottom_texcoords.x, bottom_texcoords.y) <= 1.0 && min(bottom_texcoords.x, bottom_texcoords.y) >= 0) {
-        float ambient_light = 0.2;
-        vec3 albedo = texture(bottom_texture, bottom_texcoords).rgb;
-        float lightness = ambient_light + max(0.0, dot(bottom_normal, sun_direction));
-
-        refracted_color = lightness * albedo;
-    } else {
-        x = atan(refracted_direction.z, refracted_direction.x) / PI * 0.5 + 0.5;
-        y = -atan(refracted_direction.y, length(refracted_direction.xz)) / PI + 0.5;
-        refracted_color = (texture(environment_texture, vec2(x, y)).rgb) / 2;;
-    }
-    color = mix(color, refracted_color, 0.8);
+    
+    color = add_color_from_rectangle(color, bottom_angle, bottom_x_side, bottom_y_side, bottom_texture, position, ray_coef, 0.8);
     color = mix(color, vec3(0.0, 0.1, 1.0), 0.2);
     out_color = vec4(color, 1.0);
 }

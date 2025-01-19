@@ -12,6 +12,17 @@ struct PoolVertex{
         position(position), normal(normal), texcoords(texcoords) {}
 };
 
+std::vector<PoolVertex> to_vector(Rectangle rec) {
+    glm::vec3 normal = rec.normal();
+    std::vector<PoolVertex> result = {
+        PoolVertex(rec[0], normal, glm::vec2(0.0, 1.0)),
+        PoolVertex(rec[1], normal, glm::vec2(1.0, 1.0)),
+        PoolVertex(rec[2], normal, glm::vec2(1.0, 0.0)),
+        PoolVertex(rec[3], normal, glm::vec2(0.0, 0.0)),
+    };
+    return result;
+}
+
 PoolProgram::PoolProgram(std::string vertex_shader_path, std::string fragment_shader_path,
                           PoolCoordinates coordinates, GLuint bottom_texture, GLuint wall_texture):
     ShaderProgram(vertex_shader_path, fragment_shader_path),
@@ -28,60 +39,20 @@ PoolProgram::PoolProgram(std::string vertex_shader_path, std::string fragment_sh
 
     glBindVertexArray(vao);
 
-    glm::vec3 left_vector(-coordinates.length / 2, 0.0, -coordinates.width / 2);
-    glm::vec3 right_vector(coordinates.length / 2, 0.0, -coordinates.width / 2);
-
-    glm::vec3 x_side_vector(coordinates.length, 0.0, 0.0);
-    glm::vec3 z_side_vector(0.0, 0.0, coordinates.width);
-
-    glm::vec3 bottom_1 = coordinates.bottom_corner;
-    glm::vec3 bottom_2 = coordinates.bottom_corner + x_side_vector;
-    glm::vec3 bottom_3 = coordinates.bottom_corner + x_side_vector + z_side_vector;
-    glm::vec3 bottom_4 = coordinates.bottom_corner + z_side_vector;
-
-    glm::vec3 to_top_vec(0.0, coordinates.height, 0.0);
-
-    glm::vec3 top_1 = bottom_1 + to_top_vec;
-    glm::vec3 top_2 = bottom_2 + to_top_vec;
-    glm::vec3 top_3 = bottom_3 + to_top_vec;
-    glm::vec3 top_4 = bottom_4 + to_top_vec;
-
-    glm::vec3 back_normal(-1, 0, 0);
-    glm::vec3 botoom_normal(0, 1, 0);
-    glm::vec3 front_normal(1, 0, 0);
-    glm::vec3 right_normal(0, 0, -1);
-    glm::vec3 left_normal(0, 0, 1);
-
-    std::vector<PoolVertex> vertexes = {
-        // bottom
-        PoolVertex(bottom_1, botoom_normal, glm::vec2(0.0, 1.0)),
-        PoolVertex(bottom_2, botoom_normal, glm::vec2(1.0, 1.0)),
-        PoolVertex(bottom_3, botoom_normal, glm::vec2(1.0, 0.0)),
-        PoolVertex(bottom_4, botoom_normal, glm::vec2(0.0, 0.0)),
-        // front
-        PoolVertex(bottom_2, front_normal, glm::vec2(0.0, 1.0)),
-        PoolVertex(bottom_1, front_normal, glm::vec2(1.0, 1.0)),
-        PoolVertex(top_1, front_normal, glm::vec2(1.0, 0.0)),
-        PoolVertex(top_2, front_normal, glm::vec2(0.0, 0.0)),
-        // right
-        PoolVertex(bottom_3, right_normal, glm::vec2(0.0, 1.0)),
-        PoolVertex(bottom_2, right_normal, glm::vec2(1.0, 1.0)),
-        PoolVertex(top_2, right_normal, glm::vec2(1.0, 0.0)),
-        PoolVertex(top_3, right_normal, glm::vec2(0.0, 0.0)),
-        // back
-        PoolVertex(bottom_4, back_normal, glm::vec2(0.0, 1.0)),
-        PoolVertex(bottom_3, back_normal, glm::vec2(1.0, 1.0)),
-        PoolVertex(top_3, back_normal, glm::vec2(1.0, 0.0)),
-        PoolVertex(top_4, back_normal, glm::vec2(0.0, 0.0)),
-        // left
-        PoolVertex(bottom_1, left_normal, glm::vec2(0.0, 1.0)),
-        PoolVertex(bottom_4, left_normal, glm::vec2(1.0, 1.0)),
-        PoolVertex(top_4, left_normal, glm::vec2(1.0, 0.0)),
-        PoolVertex(top_1, left_normal, glm::vec2(0.0, 0.0)),
+    std::vector<Rectangle> rectangles = {
+        coordinates.get_bottom(),
+        coordinates.get_right(),
+        coordinates.get_back(),
+        coordinates.get_left(),
+        coordinates.get_front(),
     };
 
+    std::vector<PoolVertex> vertexes;
     std::vector<uint32_t> indices;
-    for (int i = 0; i < 5; i++) {
+
+    for (size_t i = 0; i < rectangles.size(); i++) {
+        for (auto el : to_vector(rectangles[i]))
+            vertexes.push_back(el);
         indices.push_back(i * 4 + 0);
         indices.push_back(i * 4 + 2);
         indices.push_back(i * 4 + 1);

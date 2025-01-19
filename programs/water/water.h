@@ -15,6 +15,7 @@ public:
     void set_camera_position(glm::vec3 camera_position);
     void set_sun_direction(glm::vec3 sun_direction);
     void set_bottom_texture(GLuint bottom_texture_source);
+    void set_wall_texture(GLuint wall_texture_source);
     void set_environment_texture(GLuint environment_texture_source);
     void fetch_time(float time);
 
@@ -33,12 +34,9 @@ private:
     GLuint camera_position_location;
     GLuint sun_direction_location;
     GLuint time_location;
-
-    GLuint bottom_angle_location;
-    GLuint bottom_x_side_location;
-    GLuint bottom_y_side_location;
     
     Texture bottom_texture;
+    Texture wall_texture;
 
     Texture environment_texture;
 };
