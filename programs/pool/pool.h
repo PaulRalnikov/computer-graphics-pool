@@ -14,13 +14,15 @@ public:
     void set_projection(glm::mat4 model);
     void set_sun_direction(glm::vec3 sun_direction);
     void set_wall_texture(GLuint new_wall_texture_source);
+    void set_caustics_texture(GLuint caustics_texture_source);
 
     void run() override;
 private:
     GLuint vao;
     GLuint vbo;
     GLuint ebo;
-    Texture texture;
+    Texture albedo_texture;
+    Texture caustics_texture;
 
     GLuint bottom_texture_source;
     GLuint wall_texture_source;

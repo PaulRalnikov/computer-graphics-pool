@@ -97,7 +97,6 @@ GLuint load_texture(std::string const &path)
     GLuint result;
     glGenTextures(1, &result);
     glBindTexture(GL_TEXTURE_2D, result);
-    // glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -175,6 +174,12 @@ int main() try
         environmenmt_map_dir + "/main.vert",
         environmenmt_map_dir + "/main.frag"
     );
+    CausticsProgram caustics_program(
+        caustics_dir + "/main.vert",
+        caustics_dir + "/main.frag",
+        water_surface,
+        256
+    );
     PoolProgram pool_program(
         pool_dir + "/main.vert",
         pool_dir + "/main.frag",
@@ -185,12 +190,6 @@ int main() try
         water_dir + "/main.vert",
         water_dir + "/main.frag",
         water_surface
-    );
-    CausticsProgram caustics_program(
-        caustics_dir + "/main.vert",
-        caustics_dir + "/main.frag",
-        water_surface,
-        256
     );
 
     while (settings.get_running())
@@ -229,7 +228,7 @@ int main() try
         caustics_program.set_corner(bottom.corner);
         caustics_program.set_x_side_vector(bottom.x_side);
         caustics_program.set_y_side_vector(bottom.y_side);
-        caustics_program.run();
+        caustics_program.run(); 
 
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
@@ -238,6 +237,7 @@ int main() try
         pool_program.set_view(view);
         pool_program.set_sun_direction(sun_direction);
         pool_program.set_wall_texture(pool_wall_texture_source);
+        pool_program.set_caustics_texture(caustics_program.get_caustics_texture_source());
         pool_program.run();
 
         water_surface.fetch_time(time);

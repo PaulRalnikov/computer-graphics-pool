@@ -62,7 +62,7 @@ ShaderProgram::Texture::Texture(
     GLenum target,
     unsigned int texture_num
 ):
-    target(target), texture_num(texture_num), program(program)
+    target(target), texture_num(texture_num)
 {
     glUseProgram(program->id);
     texture_location = glGetUniformLocation(program->id, name);
@@ -71,7 +71,6 @@ ShaderProgram::Texture::Texture(
 
 void ShaderProgram::Texture::bind(GLuint texture_source)
 {
-    glUseProgram(program->id);
     glActiveTexture(GL_TEXTURE0 + texture_num);
     glBindTexture(target, texture_source);
 }

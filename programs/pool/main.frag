@@ -6,6 +6,7 @@ uniform mat4 projection;
 uniform vec3 sun_direction;
 
 uniform sampler2D albedo_texture;
+uniform sampler2D caustics_texture;
 
 in vec3 position;
 in vec3 normal;
@@ -31,9 +32,10 @@ void main()
 {
     float ambient_light = 0.2;
     vec3 albedo = texture(albedo_texture, texcoord).rgb;
+    vec3 caustics = texture(caustics_texture, texcoord).rgb;
     float lightness = ambient_light + max(0.0, dot(normal, sun_direction));
 
-    vec3 color = lightness * albedo;
+    vec3 color = lightness * caustics;
     color = Uncharted2Tonemap(color);
     //gamma correction
     color = pow(color, vec3(1.0 / 2.2));

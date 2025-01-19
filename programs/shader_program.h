@@ -13,7 +13,6 @@ public:
         void bind(GLuint texture_source);
 
     private:
-        const ShaderProgram* program; 
         GLuint texture_location;
         GLenum target;
         unsigned int texture_num;

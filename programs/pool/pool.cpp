@@ -27,9 +27,9 @@ PoolProgram::PoolProgram(std::string vertex_shader_path, std::string fragment_sh
     ShaderProgram(vertex_shader_path, fragment_shader_path),
     coordinates(coordinates),
     bottom_texture_source(bottom_texture_source),
-    texture(this, "albedo_texture", GL_TEXTURE_2D, 0)
+    albedo_texture(this, "albedo_texture", GL_TEXTURE_2D, 0),
+    caustics_texture(this, "caustics_texture", GL_TEXTURE_2D, 1)
 {
-
     model_location = glGetUniformLocation(id, "model");
     view_location = glGetUniformLocation(id, "view");
     projection_location = glGetUniformLocation(id, "projection");
@@ -65,7 +65,7 @@ PoolProgram::PoolProgram(std::string vertex_shader_path, std::string fragment_sh
 
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
-    
+
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(GL_ARRAY_BUFFER, vertexes.size() * sizeof(vertexes[0]), vertexes.data(), GL_STATIC_DRAW);
@@ -108,15 +108,19 @@ void PoolProgram::set_wall_texture(GLuint new_wall_texture_source) {
     wall_texture_source = new_wall_texture_source;
 }
 
-    void PoolProgram::run()
+void PoolProgram::set_caustics_texture(GLuint caustics_texture_source) {
+    caustics_texture.bind(caustics_texture_source);
+}
+
+void PoolProgram::run()
 {
     glUseProgram(id);
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 
-    texture.bind(bottom_texture_source);
+    albedo_texture.bind(bottom_texture_source);
     glDrawElements(GL_TRIANGLES, bottom_vertex_segment_length, GL_UNSIGNED_INT, (void *)(bottom_vertex_segment_start * sizeof(int)));
-    texture.bind(wall_texture_source);
+    albedo_texture.bind(wall_texture_source);
     glDrawElements(GL_TRIANGLES, wall_vertex_segment_length, GL_UNSIGNED_INT, (void *)(wall_vertex_segment_start * sizeof(int)));
 }
