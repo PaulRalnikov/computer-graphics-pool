@@ -89,12 +89,14 @@ vec3 add_color_from_rectangle(
     vec3 angle_p_ray = p - currect_corner;
     vec2 texcoords = vec2(
         get_projection_length(currecnt_x_side_vector, angle_p_ray),
-        1 - get_projection_length(currect_y_side_vector, angle_p_ray)
+        get_projection_length(currect_y_side_vector, angle_p_ray)
     );
+
+    vec2 albedo_texcoords = vec2(texcoords.x, 1 - texcoords.y);
 
     if (t >= 0 && max(texcoords.x, texcoords.y) <= 1.0 && min(texcoords.x, texcoords.y) >= 0) {
         float ambient_light = 0.2;
-        vec3 albedo = texture(rectangle_texture, texcoords).rgb;
+        vec3 albedo = texture(rectangle_texture, albedo_texcoords).rgb;
         float lightness = ambient_light + texture(caustics_texture, texcoords).r;
 
         vec3 refracted_color = lightness * albedo;
@@ -136,10 +138,10 @@ void main()
     vec3 ray_coef = normalize(refracted_direction);
     
     color = add_color_from_rectangle(color, 0, bottom_texture, bottom_caustics_texture, position, ray_coef, refraction_mix_coef);
-    color = add_color_from_rectangle(color, 1, wall_texture, bottom_caustics_texture, position, ray_coef, refraction_mix_coef);
-    color = add_color_from_rectangle(color, 2, wall_texture, bottom_caustics_texture, position, ray_coef, refraction_mix_coef);
-    color = add_color_from_rectangle(color, 3, wall_texture, bottom_caustics_texture, position, ray_coef, refraction_mix_coef);
-    color = add_color_from_rectangle(color, 4, wall_texture, bottom_caustics_texture, position, ray_coef, refraction_mix_coef);
+    color = add_color_from_rectangle(color, 1, wall_texture, front_caustics_texture, position, ray_coef, refraction_mix_coef);
+    color = add_color_from_rectangle(color, 2, wall_texture, right_caustics_texture, position, ray_coef, refraction_mix_coef);
+    color = add_color_from_rectangle(color, 3, wall_texture, back_caustics_texture, position, ray_coef, refraction_mix_coef);
+    color = add_color_from_rectangle(color, 4, wall_texture, left_caustics_texture, position, ray_coef, refraction_mix_coef);
 
     color = mix(color, vec3(0.0, 0.1, 1.0), 0.2);
 

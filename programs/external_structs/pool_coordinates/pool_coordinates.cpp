@@ -56,3 +56,13 @@ Rectangle PoolCoordinates::get_left() const
 {
     return Rectangle(bottom_corner + z(), -z(), y());
 }
+
+Rectangle PoolCoordinates::get_side(size_t side_index) const
+{
+    if (side_index == 0) return get_bottom();
+    if (side_index == 1) return get_front();
+    if (side_index == 2) return get_right();
+    if (side_index == 3) return get_back();
+    if (side_index == 4) return get_left();
+    throw std::runtime_error("Too large side index");
+}

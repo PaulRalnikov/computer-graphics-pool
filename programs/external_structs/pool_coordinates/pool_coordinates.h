@@ -17,6 +17,7 @@ struct Rectangle{
 class PoolCoordinates
 {
 public:
+    static const inline int NUM_SIDES = 5;
     float width;
     float length;
     float height;
@@ -33,4 +34,6 @@ public:
     Rectangle get_right() const;
     Rectangle get_back() const;
     Rectangle get_left() const;
+
+    Rectangle get_side(size_t side_num) const;
 };

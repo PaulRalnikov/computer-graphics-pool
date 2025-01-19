@@ -189,7 +189,12 @@ int main() try
 
     const unsigned int CAUSTICS_TEXTURE_RESOLUTION = 512;
 
-    GLuint bottom_texture = gen_texture(512);
+    std::vector<GLuint> caustics_textures(PoolCoordinates::NUM_SIDES);
+    for (size_t i = 0; i < caustics_textures.size(); i++) {
+        caustics_textures[i] = gen_texture(CAUSTICS_TEXTURE_RESOLUTION);
+    }
+
+    GLuint bottom_caustics_texture_source = caustics_textures[0];
 
     CausticsProgram caustics_program(
         caustics_dir + "/main.vert",
@@ -197,10 +202,6 @@ int main() try
         water_surface,
         512
     );
-
-    caustics_program.set_caustics_texture_source(bottom_texture);
-
-    GLuint bottom_caustics_texture_source = caustics_program.get_caustics_texture_source();
 
     PoolProgram pool_program(
         pool_dir + "/main.vert",
@@ -243,14 +244,17 @@ int main() try
         environment_map_program.set_environment_texture(backgound_texture_source);
         environment_map_program.run();
 
-        Rectangle bottom = pool_coordinates.get_bottom();
         caustics_program.set_model(model);
         caustics_program.set_sun_direction(sun_direction);
         caustics_program.set_time(time);
-        caustics_program.set_corner(bottom.corner);
-        caustics_program.set_x_side_vector(bottom.x_side);
-        caustics_program.set_y_side_vector(bottom.y_side);
-        caustics_program.run(); 
+        for (size_t i = 0; i < PoolCoordinates::NUM_SIDES; i++) {
+            Rectangle side = pool_coordinates.get_side(i);
+            caustics_program.set_caustics_texture_source(caustics_textures[i]);
+            caustics_program.set_corner(side.corner);
+            caustics_program.set_x_side_vector(side.x_side);
+            caustics_program.set_y_side_vector(side.y_side);
+            caustics_program.run();
+        }
 
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
@@ -268,7 +272,10 @@ int main() try
         water_program.set_projection(projection);
         water_program.set_view(view);
         water_program.set_bottom_texture(bricks_texture_source);
-        water_program.set_caustics_texture(0, bottom_caustics_texture_source);
+
+        for (size_t i = 0; i < PoolCoordinates::NUM_SIDES; i++)
+            water_program.set_caustics_texture(i, caustics_textures[i]);
+        
         water_program.set_wall_texture(pool_wall_texture_source);
         water_program.set_environment_texture(backgound_texture_source);
         water_program.set_camera_position(camera_position);

@@ -35,37 +35,20 @@ WaterProgram::WaterProgram(std::string vertex_shader_path, std::string fragment_
     }
     
     const PoolCoordinates &coordinates = surface.get_pool_coordinates();
-    Rectangle bottom = coordinates.get_bottom();
-    Rectangle front = coordinates.get_front();
-    Rectangle right = coordinates.get_right();
-    Rectangle back = coordinates.get_back();
-    Rectangle left = coordinates.get_left();
+    
+    std::vector<glm::vec3> corners(PoolCoordinates::NUM_SIDES);
+    std::vector<glm::vec3> x_side_vectors(PoolCoordinates::NUM_SIDES);
+    std::vector<glm::vec3> y_side_vectors(PoolCoordinates::NUM_SIDES);
+    
+    for (size_t i = 0; i < PoolCoordinates::NUM_SIDES; i++) {
+        Rectangle side = coordinates.get_side(i);
+        corners[i] = side.corner;
+        x_side_vectors[i] = side.x_side;
+        y_side_vectors[i] = side.y_side;
+    }
 
-    std::vector<glm::vec3> corners = {
-        bottom.corner,
-        front.corner,
-        right.corner,
-        back.corner,
-        left.corner
-    };
     glUniform3fv(corner_location, corners.size(), reinterpret_cast<float *>(corners.data()));
-
-    std::vector<glm::vec3> x_side_vectors = {
-        bottom.x_side,
-        front.x_side,
-        right.x_side,
-        back.x_side,
-        left.x_side
-    };
     glUniform3fv(x_side_vector_location, x_side_vectors.size(), reinterpret_cast<float *>(x_side_vectors.data()));
-
-    std::vector<glm::vec3> y_side_vectors = {
-        bottom.y_side,
-        front.y_side,
-        right.y_side,
-        back.y_side,
-        left.y_side
-    };
     glUniform3fv(y_side_vector_location, y_side_vectors.size(), reinterpret_cast<float *>(y_side_vectors.data()));
 }
 

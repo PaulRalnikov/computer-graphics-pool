@@ -31,7 +31,8 @@ vec3 Uncharted2Tonemap(vec3 color){
 void main()
 {
     float ambient_light = 0.2;
-    vec3 albedo = texture(albedo_texture, texcoord).rgb;
+    vec2 albedo_texcoords = vec2(texcoord.x, 1 - texcoord.y);
+    vec3 albedo = texture(albedo_texture, albedo_texcoords).rgb;
     float caustics = texture(caustics_texture, texcoord).r;
     float lightness = ambient_light + max(0.0, dot(normal, sun_direction));
 
