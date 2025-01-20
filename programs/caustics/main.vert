@@ -72,6 +72,7 @@ void main()
         get_projection_length(x_side_vector, corner_p_ray),
         get_projection_length(y_side_vector, corner_p_ray)
     );
+    texcoords = texcoords * 2.0 - 1.0;
 
     gl_Position = vec4(texcoords, 1.0, 1.0);
 }

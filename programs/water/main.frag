@@ -96,7 +96,7 @@ vec3 add_color_from_rectangle(
     if (t >= 0 && max(texcoords.x, texcoords.y) <= 1.0 && min(texcoords.x, texcoords.y) >= 0) {
         float ambient_light = 0.2;
         vec3 albedo = texture(rectangle_texture, albedo_texcoords).rgb;
-        float lightness = ambient_light + texture(caustics_texture, texcoords * 0.5 + 0.5).r;
+        float lightness = ambient_light + texture(caustics_texture, texcoords).r;
 
         vec3 refracted_color = lightness * albedo;
         return mix(in_color, refracted_color, 1 - mix_coef);
@@ -139,7 +139,7 @@ void main()
 
     float x = atan(dir.z, dir.x) / PI * 0.5 + 0.5;
     float y = -atan(dir.y, length(dir.xz)) / PI + 0.5;
-    vec3 color = (texture(environment_texture, vec2(x, y)).rgb) / 2;
+    vec3 color = (texture(environment_texture, vec2(x, y)).rgb);
 
     vec3 ray_direction = normalize(position - camera_position);
     float r = 1 / 1.333;
