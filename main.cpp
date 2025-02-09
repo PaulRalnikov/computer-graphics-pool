@@ -34,6 +34,7 @@
 #include "programs/pool/pool.h"
 #include "programs/water/water.h"
 #include "programs/caustics/caustics.h"
+#include "programs/blur/blur.h"
 #include "programs/external_structs/water_surface/water_surface.h"
 #include "programs/external_structs/pool_coordinates/pool_coordinates.h"
 
@@ -43,6 +44,7 @@ const std::string environmenmt_map_dir = programs_dir + "/environment_map";
 const std::string pool_dir = programs_dir + "/pool";
 const std::string water_dir = programs_dir + "/water";
 const std::string caustics_dir = programs_dir + "/caustics";
+const std::string blur_dir = programs_dir + "/blur";
 
 const std::string textures_dir = project_root + "/textures";
 
@@ -194,11 +196,21 @@ int main() try
         caustics_textures[i] = gen_texture(CAUSTICS_TEXTURE_RESOLUTION);
     }
 
+    GLuint swap_texture_source = gen_texture(CAUSTICS_TEXTURE_RESOLUTION);
+
     CausticsProgram caustics_program(
         caustics_dir + "/main.vert",
         caustics_dir + "/main.frag",
         water_surface,
         512
+    );
+
+    BlurProgram blur_program(
+        blur_dir + "/main.vert",
+        blur_dir + "/main.frag",
+        swap_texture_source, 
+        CAUSTICS_TEXTURE_RESOLUTION,
+        caustics_program.get_fbo()
     );
 
     PoolProgram pool_program(
@@ -254,6 +266,9 @@ int main() try
             caustics_program.set_x_side_vector(side.x_side);
             caustics_program.set_y_side_vector(side.y_side);
             caustics_program.run();
+
+            blur_program.set_blur_texture(caustics_textures[i]);
+            blur_program.run();
         }
 
         glEnable(GL_DEPTH_TEST);

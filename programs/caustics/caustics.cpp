@@ -63,6 +63,10 @@ void CausticsProgram::set_caustics_texture_source(GLuint new_caustics_texture_so
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 }
 
+GLuint CausticsProgram::get_fbo() {
+    return fbo;
+}
+
 void CausticsProgram::run() {
     glUseProgram(id);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);

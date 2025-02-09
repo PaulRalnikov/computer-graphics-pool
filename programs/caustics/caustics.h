@@ -22,6 +22,8 @@ public:
     GLuint get_caustics_texture_source() const;
     void set_caustics_texture_source(GLuint new_caustics_texture_source);
 
+    GLuint get_fbo();
+
     void run() override;
 private:
     const WaterSurface& surface;
