@@ -47,7 +47,7 @@ void BlurProgram::run() {
     glUniform2f(blur_dir_location, 0.f, 1.f / textures_resolution);
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
-    // draw to swap texture
+    // draw to main texture
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, draw_fbo);
     glClear(GL_COLOR_BUFFER_BIT);
     in_texture.bind(swap_texture_source);
